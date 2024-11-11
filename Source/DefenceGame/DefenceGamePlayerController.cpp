@@ -13,6 +13,7 @@
 #include "Engine/LocalPlayer.h"
 #include "Grid/GridManager.h"
 #include "EngineUtils.h"
+#include "Kismet/GameplayStatics.h"
 
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -33,9 +34,19 @@ void ADefenceGamePlayerController::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
+	
+	//카메라 설정
+	TArray<AActor*> Actors;
+	
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "MainCamera", Actors);
+
+	if (Actors.Num())
+	{
+		SetViewTarget(Actors[0]);
+
+	}
+	
 	// 그리드 매니저 찾기
-
-
 	for (TActorIterator<AGridManager> It(GetWorld()); It; ++It)
 	{
 		GridManager = *It;
@@ -50,6 +61,9 @@ void ADefenceGamePlayerController::BeginPlay()
 		}
 
 	}
+
+
+
 }
 
 void ADefenceGamePlayerController::Tick(float DeltaSeconds)
@@ -73,17 +87,13 @@ void ADefenceGamePlayerController::SetupInputComponent()
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
-		// Setup mouse input events
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefenceGamePlayerController::OnInputStarted);
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &ADefenceGamePlayerController::OnSetDestinationTriggered);
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &ADefenceGamePlayerController::OnSetDestinationReleased);
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Canceled, this, &ADefenceGamePlayerController::OnSetDestinationReleased);
+		//// Setup mouse input events
+		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefenceGamePlayerController::OnInputStarted);
+		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &ADefenceGamePlayerController::OnSetDestinationTriggered);
+		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &ADefenceGamePlayerController::OnSetDestinationReleased);
+		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Canceled, this, &ADefenceGamePlayerController::OnSetDestinationReleased);
 
-		// Setup touch input events
-		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Started, this, &ADefenceGamePlayerController::OnInputStarted);
-		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Triggered, this, &ADefenceGamePlayerController::OnTouchTriggered);
-		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Completed, this, &ADefenceGamePlayerController::OnTouchReleased);
-		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Canceled, this, &ADefenceGamePlayerController::OnTouchReleased);
+
 	}
 	else
 	{
@@ -105,15 +115,7 @@ void ADefenceGamePlayerController::OnSetDestinationTriggered()
 	// We look for the location in the world where the player has pressed the input
 	FHitResult Hit;
 	bool bHitSuccessful = false;
-	if (bIsTouch)
-	{
-		bHitSuccessful = GetHitResultUnderFinger(ETouchIndex::Touch1, ECollisionChannel::ECC_Visibility, true, Hit);
-	}
-	else
-	{
 		bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
-	}
-
 	// If we hit a surface, cache the location
 	if (bHitSuccessful)
 	{
@@ -121,12 +123,12 @@ void ADefenceGamePlayerController::OnSetDestinationTriggered()
 	}
 	
 	// Move towards mouse pointer or touch
-	APawn* ControlledPawn = GetPawn();
+	/*APawn* ControlledPawn = GetPawn();
 	if (ControlledPawn != nullptr)
 	{
 		FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
 		ControlledPawn->AddMovementInput(WorldDirection, 1.0, false);
-	}
+	}*/
 }
 
 void ADefenceGamePlayerController::OnSetDestinationReleased()
@@ -142,18 +144,7 @@ void ADefenceGamePlayerController::OnSetDestinationReleased()
 	FollowTime = 0.f;
 }
 
-// Triggered every frame when the input is held down
-void ADefenceGamePlayerController::OnTouchTriggered()
-{
-	bIsTouch = true;
-	OnSetDestinationTriggered();
-}
 
-void ADefenceGamePlayerController::OnTouchReleased()
-{
-	bIsTouch = false;
-	OnSetDestinationReleased();
-}
 
 void ADefenceGamePlayerController::UpdatePreview()
 {
@@ -172,6 +163,8 @@ void ADefenceGamePlayerController::UpdatePreview()
 		// 그리드 셀 인덱스 계산
 		int32 Col = FMath::FloorToInt(RelativeLocation.X / GridManager->CellSize);
 		int32 Row = FMath::FloorToInt(RelativeLocation.Y / GridManager->CellSize);
+
+		UE_LOG(LogTemp, Warning, TEXT("Col : %d , Row : %d"), Col, Row);
 
 		// 유효한 인덱스인지 확인
 		if (Col >= 0 && Col < GridManager->Columns && Row >= 0 && Row < GridManager->Rows)
