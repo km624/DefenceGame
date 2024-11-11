@@ -43,4 +43,12 @@ public:
 	// 그리드를 생성하는 함수
 	void GenerateGrid();
 
+	// 스폰 체크를 위한 구형 콜리전 컴포넌트
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
+	class USphereComponent* SpawnCheckSphere;
+
+	// 스폰 위치에 액터가 있는지 확인하는 함수
+	UFUNCTION(BlueprintCallable, Category = "Spawn")
+	bool CheckIfSpawnLocationIsOccupied(const FVector& Location);
+
 };

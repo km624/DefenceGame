@@ -164,7 +164,7 @@ void ADefenceGamePlayerController::UpdatePreview()
 		int32 Col = FMath::FloorToInt(RelativeLocation.X / GridManager->CellSize);
 		int32 Row = FMath::FloorToInt(RelativeLocation.Y / GridManager->CellSize);
 
-		UE_LOG(LogTemp, Warning, TEXT("Col : %d , Row : %d"), Col, Row);
+		//UE_LOG(LogTemp, Warning, TEXT("Col : %d , Row : %d"), Col, Row);
 
 		// 유효한 인덱스인지 확인
 		if (Col >= 0 && Col < GridManager->Columns && Row >= 0 && Row < GridManager->Rows)
