@@ -13,9 +13,18 @@ void ADFAIController::BeginPlay()
 	Super::BeginPlay();
 
 	TArray<AActor*> Actors;
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "TargetPosition", Actors);
-	if(Actors.Num())
-		TargetPostion = Actors[0];
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "Position", Actors);
+	
+	for (auto& Actor : Actors)
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("%s"), *Actor->GetActorNameOrLabel());
+		if (Actor->GetActorNameOrLabel() ==TEXT("AITargetPostion"))
+		{
+			TargetPostion = Actor;
+			break;
+		}
+	}
+
 
 	MoveToActor(TargetPostion, 5.0f, true, true, true, 0, true);
 	
