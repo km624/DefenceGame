@@ -152,14 +152,17 @@ void ADefenceGamePlayerController::UpdatePreview()
 
 	// 마우스 히트 결과 얻기
 	FHitResult HitResult;
+
+	
 	if (GetHitResultUnderCursor(ECC_Visibility, false, HitResult))
 	{
+		
 		FVector HitLocation = HitResult.Location;
-
+		
 		// 그리드 매니저 위치 기준으로 상대 위치 계산
 		FVector GridOrigin = GridManager->GetActorLocation();
 		FVector RelativeLocation = HitLocation - GridOrigin;
-
+		
 		// 그리드 셀 인덱스 계산
 		int32 Col = FMath::FloorToInt(RelativeLocation.X / GridManager->CellSize);
 		int32 Row = FMath::FloorToInt(RelativeLocation.Y / GridManager->CellSize);
@@ -169,11 +172,14 @@ void ADefenceGamePlayerController::UpdatePreview()
 		// 유효한 인덱스인지 확인
 		if (Col >= 0 && Col < GridManager->Columns && Row >= 0 && Row < GridManager->Rows)
 		{
-			// 셀 중심 위치 계산
-			FVector CellCenter = GridOrigin + FVector((Col + 0.5f) * GridManager->CellSize, (Row + 0.5f) * GridManager->CellSize, 0.0f);
-			
-			PreviewActor->SetActorLocation(CellCenter);
-			PreviewActor->SetActorHiddenInGame(false);
+			if (HitResult.GetActor()->ActorHasTag(TEXT("TowerSpawn")))
+			{
+				// 셀 중심 위치 계산
+				FVector CellCenter = GridOrigin + FVector((Col + 0.5f) * GridManager->CellSize, (Row + 0.5f) * GridManager->CellSize, 100.0f);
+
+				PreviewActor->SetActorLocation(CellCenter);
+				PreviewActor->SetActorHiddenInGame(false);
+			}
 		}
 		else
 		{
