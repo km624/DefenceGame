@@ -58,8 +58,8 @@ protected:
 	void OnInputStarted();
 	void OnSetDestinationTriggered();
 	void OnSetDestinationReleased();
-	void OnTouchTriggered();
-	void OnTouchReleased();
+	/*void OnTouchTriggered();
+	void OnTouchReleased();*/
 
 private:
 	FVector CachedDestination;
@@ -81,6 +81,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	TObjectPtr<class AGridManager> GridManager;
 
+	
 };
 
 
