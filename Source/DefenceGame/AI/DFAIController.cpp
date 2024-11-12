@@ -25,9 +25,6 @@ void ADFAIController::BeginPlay()
 		}
 	}
 
-	
-	MoveToActor(TargetPostion, 5.0f, true, true, true, 0, true);
-	
 }
 
 void ADFAIController::OnPossess(APawn* InPawn)

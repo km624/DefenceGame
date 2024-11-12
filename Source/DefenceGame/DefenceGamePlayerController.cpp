@@ -148,7 +148,7 @@ void ADefenceGamePlayerController::OnSetDestinationReleased()
 
 void ADefenceGamePlayerController::SetCameraMove(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("what"));
+	
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
 	float InputSizeSquared = MovementVector.SquaredLength();

@@ -4,6 +4,7 @@
 #include "Level/DFLevelScriptActor.h"
 #include "Component/SpawnComponent.h"
 
+
 ADFLevelScriptActor::ADFLevelScriptActor()
 {
 	SpawnComponent = CreateDefaultSubobject<USpawnComponent>(TEXT("Spawn"));

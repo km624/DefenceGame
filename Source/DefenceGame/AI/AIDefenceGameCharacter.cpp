@@ -7,12 +7,12 @@
 AAIDefenceGameCharacter::AAIDefenceGameCharacter()
 {
 	static ConstructorHelpers::FClassFinder<ADFAIController>
-		AICONTROLLER(TEXT("/Script/Engine.Blueprint'/Game/DefenceGame/Blueprint/BP_AIController.BP_AIController_C'"));
+		AICONTROLLER(TEXT("/Script/Engine.Blueprint'/Game/DefenceGame/Blueprint/AI/BP_AIController.BP_AIController_C'"));
 	if (AICONTROLLER.Class)
 	{
 		AIControllerClass = AICONTROLLER.Class;
 	}
 
-	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	AutoPossessAI = EAutoPossessAI::Spawned;
 	
 }

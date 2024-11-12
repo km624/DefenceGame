@@ -40,7 +40,9 @@ void USpawnComponent::StartSpawn()
 	if (SpawnCharacter && StartPosition)
 	{
 
-		GetWorld()->SpawnActor<AActor>(SpawnCharacter, StartPosition->GetActorLocation(), FRotator::ZeroRotator);
+		AAIDefenceGameCharacter* aiCharacter = GetWorld()->SpawnActor<AAIDefenceGameCharacter>(SpawnCharacter, StartPosition->GetActorLocation(), FRotator::ZeroRotator);
+		//AAIController* aiController = GetWorld()->SpawnActor<AAIController>(AAIController::StaticClass(), StartPosition->GetActorLocation(), FRotator::ZeroRotator);
+		//aiCharacter->PossessedBy(aiController);
 	}
 
 		
