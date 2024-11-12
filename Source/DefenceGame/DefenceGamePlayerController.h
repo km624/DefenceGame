@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Templates/SubclassOf.h"
 #include "GameFramework/PlayerController.h"
+#include "InputActionValue.h"
 #include "DefenceGamePlayerController.generated.h"
 
 /** Forward declaration to improve compiling times */
@@ -39,8 +40,11 @@ public:
 	UInputAction* SetDestinationClickAction;
 
 	/** Jump Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	UInputAction* SetDestinationTouchAction;
+	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UInputAction* SetDestinationTouchAction;*/
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* IACameraMove;
 
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
@@ -60,6 +64,7 @@ protected:
 	void OnSetDestinationReleased();
 	/*void OnTouchTriggered();
 	void OnTouchReleased();*/
+	void SetCameraMove(const FInputActionValue& Value);
 
 private:
 	FVector CachedDestination;
@@ -81,6 +86,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	TObjectPtr<class AGridManager> GridManager;
 
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+	TObjectPtr<class AActor> MainCamera;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+	float CameraSpeed;
 	
 };
 

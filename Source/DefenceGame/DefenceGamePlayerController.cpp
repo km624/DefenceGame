@@ -42,7 +42,9 @@ void ADefenceGamePlayerController::BeginPlay()
 
 	if (Actors.Num())
 	{
-		SetViewTarget(Actors[0]);
+		
+		MainCamera = Actors[0];
+		SetViewTarget(MainCamera);
 
 	}
 	
@@ -92,7 +94,7 @@ void ADefenceGamePlayerController::SetupInputComponent()
 		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &ADefenceGamePlayerController::OnSetDestinationTriggered);
 		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &ADefenceGamePlayerController::OnSetDestinationReleased);
 		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Canceled, this, &ADefenceGamePlayerController::OnSetDestinationReleased);
-
+		EnhancedInputComponent->BindAction(IACameraMove, ETriggerEvent::Triggered, this, &ADefenceGamePlayerController::SetCameraMove);
 
 	}
 	else
@@ -142,6 +144,34 @@ void ADefenceGamePlayerController::OnSetDestinationReleased()
 	}
 
 	FollowTime = 0.f;
+}
+
+void ADefenceGamePlayerController::SetCameraMove(const FInputActionValue& Value)
+{
+	UE_LOG(LogTemp, Warning, TEXT("what"));
+	FVector2D MovementVector = Value.Get<FVector2D>();
+
+	float InputSizeSquared = MovementVector.SquaredLength();
+	float MovementVectorSize = 1.0f;
+	float MovementVectorSizeSquared = MovementVector.SquaredLength();
+	if (MovementVectorSizeSquared > 1.0f)
+	{
+		MovementVector.Normalize();
+		MovementVectorSizeSquared = 1.0f;
+	}
+	else
+	{
+		MovementVectorSize = FMath::Sqrt(MovementVectorSizeSquared);
+	}
+
+	FVector MoveDirection = FVector(MovementVector.X, MovementVector.Y, 0.0f);
+	//AddMovementInput(MoveDirection, MovementVectorSize);
+
+	//FVector ForwardDirection = MainCamera->GetActorForwardVector();
+	//// 이동 벡터 계산
+	//FVector Movement = ForwardDirection * Value * MovementSpeed * GetWorld()->GetDeltaSeconds();
+	// 현재 위치에 이동 벡터를 더함
+	MainCamera->AddActorLocalOffset(MoveDirection* CameraSpeed, true);
 }
 
 
