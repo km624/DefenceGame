@@ -12,5 +12,7 @@ AAIDefenceGameCharacter::AAIDefenceGameCharacter()
 	{
 		AIControllerClass = AICONTROLLER.Class;
 	}
+
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	
 }

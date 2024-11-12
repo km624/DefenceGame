@@ -21,6 +21,8 @@ public:
 
 	virtual void BeginPlay() override;
 
+	virtual void OnPossess(APawn* InPawn) override;
+
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Postion")
