@@ -19,7 +19,7 @@ ATowerDefenceGameCharacter::ATowerDefenceGameCharacter()
 
     
     DetectionSphere->SetGenerateOverlapEvents(true);
-
+    AutoPossessAI = EAutoPossessAI::Disabled;
    
 }
 
@@ -29,7 +29,8 @@ void ATowerDefenceGameCharacter::BeginPlay()
 
     SetUpTower(DetectDistance, SpereSize);
     DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &ATowerDefenceGameCharacter::OnBeginOverlap);
-    //DetectionSphere->OnComponentEndOverlap.AddDynamic(this, &ATowerDefenceGameCharacter::OnEndOverlap);
+   
+    DetectionSphere->OnComponentEndOverlap.AddDynamic(this, &ATowerDefenceGameCharacter::OnEndOverlap);
 }
 
 void ATowerDefenceGameCharacter::Tick(float DeltaTime)

@@ -3,16 +3,60 @@
 
 #include "AI/AIDefenceGameCharacter.h"
 #include "DFAIController.h"
+#include "Components/WidgetComponent.h"
+#include "UI/BoxHpWidget.h"
+#include "UI/DFWidgetComponent.h"
 
 AAIDefenceGameCharacter::AAIDefenceGameCharacter()
 {
-	static ConstructorHelpers::FClassFinder<ADFAIController>
+	/*static ConstructorHelpers::FClassFinder<ADFAIController>
 		AICONTROLLER(TEXT("/Script/Engine.Blueprint'/Game/DefenceGame/Blueprint/AI/BP_AIController.BP_AIController_C'"));
 	if (AICONTROLLER.Class)
 	{
 		AIControllerClass = AICONTROLLER.Class;
+	}*/
+
+	AutoPossessAI = EAutoPossessAI::Disabled;
+	
+	
+	//widget
+	HpBar = CreateDefaultSubobject<UDFWidgetComponent>(TEXT("Widget"));
+	HpBar->SetupAttachment(GetMesh());
+	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 180.0f));
+	static ConstructorHelpers::FClassFinder<UUserWidget> 
+		HpBarWidgetRef(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/DefenceGame/Blueprint/UI/BP_BoxHp.BP_BoxHp_C'"));
+
+	//본격적인 widget 세팅
+	if (HpBarWidgetRef.Class)
+	{
+		HpBar->SetWidgetClass(HpBarWidgetRef.Class);
+		//위젯2D로 지정
+		HpBar->SetWidgetSpace(EWidgetSpace::Screen);
+		// 위젯 크기 여기서 지정 ( 가느다란 크기)
+		HpBar->SetDrawSize(FVector2D(150.0f, 15.0f));
+		//충돌처리x
+		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 
-	AutoPossessAI = EAutoPossessAI::Spawned;
-	
+}
+
+void AAIDefenceGameCharacter::ChangeHp(float NewHp)
+{
+	//MAxHp 값 넘어가지 않도록 조절
+	CurrentHp = FMath::Clamp<float>(NewHp, 0.0f,MaxHp);
+
+	//델리게이트를 호출하는 역할
+	//멀티캐스트의 호출 방식
+	OnHpChanged.Broadcast(CurrentHp);
+}
+
+void AAIDefenceGameCharacter::SetupCharacterWidget(UUserWidget* InUserWidget)
+{
+	UBoxHpWidget* HpBarWidget = Cast<UBoxHpWidget>(InUserWidget);
+	HpBarWidget->SetMaxHp(MaxHp);
+	HpBarWidget->UpdateHpBar(CurrentHp);
+	//델리게이트에 등록
+	OnHpChanged.AddUObject(HpBarWidget, &UBoxHpWidget::UpdateHpBar);
+	//OnStatChanged.AddUObject(HpBarWidget, &UABHpBarWidget::UpdateStat);
+
 }

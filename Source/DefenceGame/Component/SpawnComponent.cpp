@@ -36,13 +36,11 @@ void USpawnComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 void USpawnComponent::StartSpawn()
 {
-	
 	if (SpawnCharacter && StartPosition)
 	{
-
 		AAIDefenceGameCharacter* aiCharacter = GetWorld()->SpawnActor<AAIDefenceGameCharacter>(SpawnCharacter, StartPosition->GetActorLocation(), FRotator::ZeroRotator);
-		//AAIController* aiController = GetWorld()->SpawnActor<AAIController>(AAIController::StaticClass(), StartPosition->GetActorLocation(), FRotator::ZeroRotator);
-		//aiCharacter->PossessedBy(aiController);
+		ADFAIController* aiController = GetWorld()->SpawnActor<ADFAIController>(ADFAIController::StaticClass(), StartPosition->GetActorLocation(), FRotator::ZeroRotator);
+		aiController->Possess(aiCharacter);
 	}
 
 		

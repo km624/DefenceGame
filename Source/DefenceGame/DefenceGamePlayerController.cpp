@@ -34,7 +34,9 @@ void ADefenceGamePlayerController::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
-	
+
+	FInputModeGameOnly GameOnlyInputMode;
+	SetInputMode(GameOnlyInputMode);
 	//카메라 설정
 	TArray<AActor*> Actors;
 	

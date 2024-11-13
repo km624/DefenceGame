@@ -11,6 +11,6 @@ public class DefenceGame : ModuleRules
         PublicIncludePaths.AddRange(new string[] { "DefenceGame" });
 
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "NavigationSystem", "AIModule", "Niagara", "EnhancedInput" ,
-            "HeadMountedDisplay"});
+            "HeadMountedDisplay", "UMG" });
     }
 }
