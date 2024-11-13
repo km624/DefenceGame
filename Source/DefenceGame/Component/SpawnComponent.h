@@ -32,8 +32,20 @@ protected:
 
 
 protected:
-	void StartSpawn();
 
+	void BoxSpawn();
+
+	void SetTimer();
+
+protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
+	int32 BoxCount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
+	float SpawnDelay;
+
+	FTimerHandle SpawnTimeHandle;
 
 
 		

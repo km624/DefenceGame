@@ -11,8 +11,7 @@ USpawnComponent::USpawnComponent()
 {
 	
 	//PrimaryComponentTick.bCanEverTick = true;
-
-	
+	BoxCount = 10;
 }
 
 
@@ -21,8 +20,9 @@ void USpawnComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	StartSpawn();
+	BoxSpawn();
 	
+	SetTimer();
 }
 
 
@@ -34,16 +34,26 @@ void USpawnComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	
 }
 
-void USpawnComponent::StartSpawn()
+void USpawnComponent::BoxSpawn()
 {
 	if (SpawnCharacter && StartPosition)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("%d"), BoxCount);
 		AAIDefenceGameCharacter* aiCharacter = GetWorld()->SpawnActor<AAIDefenceGameCharacter>(SpawnCharacter, StartPosition->GetActorLocation(), FRotator::ZeroRotator);
 		ADFAIController* aiController = GetWorld()->SpawnActor<ADFAIController>(ADFAIController::StaticClass(), StartPosition->GetActorLocation(), FRotator::ZeroRotator);
 		aiController->Possess(aiCharacter);
 	}
 
-		
+	BoxCount--;
+	if (BoxCount > 0)
+		SetTimer();
 
+}
+
+void USpawnComponent::SetTimer()
+{
+
+	GetWorld()->GetTimerManager().SetTimer(SpawnTimeHandle, this, &USpawnComponent::BoxSpawn, SpawnDelay);
+	
 }
 
