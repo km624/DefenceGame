@@ -30,8 +30,8 @@ public:
     virtual void Tick(float DeltaTime) override;
 
 
-protected:
-   void SetUpTower(float Distance,float size);
+public:
+   void SetUpTower();
 
 public:
 
@@ -43,6 +43,10 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower")
     float SpereSize;
+
+protected:
+    UPROPERTY()
+    TArray<class AActor*> DetectBoxs;
 
     UFUNCTION()
     void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

@@ -31,6 +31,6 @@ void ADFAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *InPawn->GetActorNameOrLabel());
+	//UE_LOG(LogTemp, Warning, TEXT("%s"), *InPawn->GetActorNameOrLabel());
 	MoveToActor(TargetPostion, 5.0f, true, true, true, 0, true);
 }

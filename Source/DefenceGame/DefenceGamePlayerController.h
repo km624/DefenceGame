@@ -35,9 +35,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
 	
-	/** Jump Input Action */
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* SetDestinationClickAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* SetTowerRotaionAction;
 
 	/** Jump Input Action */
 	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
@@ -75,16 +78,26 @@ private:
 protected:
 	// 마우스 위치에 따른 그리드 셀 계산
 	void UpdatePreview();
+
+	void SetTower();
+
+	void SetTowerRotaion(const FInputActionValue& Value);
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Preview")
-	TSubclassOf<AActor> PreviewActorClass;
+	TSubclassOf<class ATowerDefenceGameCharacter>PreviewActorClass;
 
 	// 현재 프리뷰 액터 인스턴스
-	AActor* PreviewActor;
+	TObjectPtr<class ATowerDefenceGameCharacter> PreviewActor;
 
 	// 그리드 매니저 참조
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	TObjectPtr<class AGridManager> GridManager;
+	
+	UPROPERTY()
+	bool bIsCanSpawn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Preview")
+	FVector CanSpawnLocation;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")

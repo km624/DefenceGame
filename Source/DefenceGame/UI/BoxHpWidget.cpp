@@ -23,7 +23,7 @@ void UBoxHpWidget::NativeConstruct()
 		AAIDefenceGameCharacter* AICharacter = Cast<AAIDefenceGameCharacter>(OnwerCharacter);
 		if (AICharacter)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Right"));
+			
 				AICharacter->SetupCharacterWidget(this);
 
 		}
@@ -36,7 +36,7 @@ void UBoxHpWidget::NativeConstruct()
 void UBoxHpWidget::UpdateHpBar(float NewCurrentHp)
 {
 	CurrentHp = NewCurrentHp;
-	ensure(MaxHp > 0.0f);
+	//ensure(MaxHp > 0.0f);
 	if (ProgressBar_Hp)
 	{
 	

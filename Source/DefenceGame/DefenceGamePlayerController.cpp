@@ -14,6 +14,7 @@
 #include "Grid/GridManager.h"
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
+#include "Tower/TowerDefenceGameCharacter.h"
 
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -35,8 +36,9 @@ void ADefenceGamePlayerController::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
-	FInputModeGameOnly GameOnlyInputMode;
-	SetInputMode(GameOnlyInputMode);
+	FInputModeGameAndUI GameAndUI;
+	SetInputMode(GameAndUI);
+	
 	//카메라 설정
 	TArray<AActor*> Actors;
 	
@@ -58,15 +60,13 @@ void ADefenceGamePlayerController::BeginPlay()
 	}
 	if (PreviewActorClass)
 	{
-		PreviewActor = GetWorld()->SpawnActor<AActor>(PreviewActorClass, FVector::ZeroVector, FRotator::ZeroRotator);
-		if (PreviewActor)
+		PreviewActor = GetWorld()->SpawnActor<ATowerDefenceGameCharacter>(PreviewActorClass, FVector::ZeroVector, FRotator::ZeroRotator);
+		/*if (PreviewActor)
 		{
 			PreviewActor->SetActorHiddenInGame(true);
-		}
+		}*/
 
 	}
-
-
 
 }
 
@@ -92,10 +92,13 @@ void ADefenceGamePlayerController::SetupInputComponent()
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		//// Setup mouse input events
-		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefenceGamePlayerController::OnInputStarted);
+
+		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefenceGamePlayerController::SetTower);
+		
 		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &ADefenceGamePlayerController::OnSetDestinationTriggered);
-		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &ADefenceGamePlayerController::OnSetDestinationReleased);
+		
 		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Canceled, this, &ADefenceGamePlayerController::OnSetDestinationReleased);
+		EnhancedInputComponent->BindAction(SetTowerRotaionAction, ETriggerEvent::Started, this, &ADefenceGamePlayerController::SetTowerRotaion);
 		EnhancedInputComponent->BindAction(IACameraMove, ETriggerEvent::Triggered, this, &ADefenceGamePlayerController::SetCameraMove);
 
 	}
@@ -167,12 +170,7 @@ void ADefenceGamePlayerController::SetCameraMove(const FInputActionValue& Value)
 	}
 
 	FVector MoveDirection = FVector(MovementVector.X, MovementVector.Y, 0.0f);
-	//AddMovementInput(MoveDirection, MovementVectorSize);
-
-	//FVector ForwardDirection = MainCamera->GetActorForwardVector();
-	//// 이동 벡터 계산
-	//FVector Movement = ForwardDirection * Value * MovementSpeed * GetWorld()->GetDeltaSeconds();
-	// 현재 위치에 이동 벡터를 더함
+	
 	MainCamera->AddActorLocalOffset(MoveDirection* CameraSpeed, true);
 }
 
@@ -206,20 +204,50 @@ void ADefenceGamePlayerController::UpdatePreview()
 		{
 			if (HitResult.GetActor()->ActorHasTag(TEXT("TowerSpawn")))
 			{
+				
 				// 셀 중심 위치 계산
-				FVector CellCenter = GridOrigin + FVector((Col + 0.5f) * GridManager->CellSize, (Row + 0.5f) * GridManager->CellSize, 100.0f);
-
+				FVector CellCenter = GridOrigin + FVector((Col + 0.5f) * GridManager->CellSize, (Row + 0.5f) * GridManager->CellSize, 190.0f);
+				CanSpawnLocation = CellCenter;
+				bIsCanSpawn = true;
 				PreviewActor->SetActorLocation(CellCenter);
 				PreviewActor->SetActorHiddenInGame(false);
 			}
 		}
 		else
 		{
-			PreviewActor->SetActorHiddenInGame(true);
+			bIsCanSpawn = false;
+			//PreviewActor->SetActorHiddenInGame(true);
 		}
 	}
 	else
 	{
-		PreviewActor->SetActorHiddenInGame(true);
+		bIsCanSpawn = false;
+		//PreviewActor->SetActorHiddenInGame(true);
 	}
+}
+
+void ADefenceGamePlayerController::SetTower()
+{
+	if (bIsCanSpawn)
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("SetTower"));
+		FHitResult Hit;
+		bool bHitSuccessful = false;
+		bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, Hit);
+		if (Hit.GetActor()->ActorHasTag(TEXT("TowerSpawn")))
+		{
+			
+			ATowerDefenceGameCharacter* SpawnedActor = GetWorld()->SpawnActor<ATowerDefenceGameCharacter>(PreviewActorClass, CanSpawnLocation,PreviewActor->GetActorRotation());
+			SpawnedActor->SetUpTower();
+		}
+	}
+	
+}
+
+void ADefenceGamePlayerController::SetTowerRotaion(const FInputActionValue& Value)
+{
+	FVector2D MovementVector = Value.Get<FVector2D>();
+	PreviewActor->SetActorRotation(FRotator(0.0f,PreviewActor->GetActorRotation().Yaw + 90.0f*MovementVector.X ,0.0f));
+	
+	
 }

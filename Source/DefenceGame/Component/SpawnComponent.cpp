@@ -38,7 +38,7 @@ void USpawnComponent::BoxSpawn()
 {
 	if (SpawnCharacter && StartPosition)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%d"), BoxCount);
+		//UE_LOG(LogTemp, Warning, TEXT("%d"), BoxCount);
 		AAIDefenceGameCharacter* aiCharacter = GetWorld()->SpawnActor<AAIDefenceGameCharacter>(SpawnCharacter, StartPosition->GetActorLocation(), FRotator::ZeroRotator);
 		ADFAIController* aiController = GetWorld()->SpawnActor<ADFAIController>(ADFAIController::StaticClass(), StartPosition->GetActorLocation(), FRotator::ZeroRotator);
 		aiController->Possess(aiCharacter);
