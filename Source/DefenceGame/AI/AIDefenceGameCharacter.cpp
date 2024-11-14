@@ -7,6 +7,7 @@
 #include "UI/BoxHpWidget.h"
 #include "UI/DFWidgetComponent.h"
 
+
 AAIDefenceGameCharacter::AAIDefenceGameCharacter()
 {
 	/*static ConstructorHelpers::FClassFinder<ADFAIController>
@@ -44,6 +45,8 @@ void AAIDefenceGameCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	ChangeHp(MaxHp);
+	TArray<AActor*> Actors;
+	
 }
 
 void AAIDefenceGameCharacter::ChangeHp(float NewHp)
@@ -78,3 +81,5 @@ void AAIDefenceGameCharacter::SetupCharacterWidget(UUserWidget* InUserWidget)
 	//OnStatChanged.AddUObject(HpBarWidget, &UABHpBarWidget::UpdateStat);
 
 }
+
+

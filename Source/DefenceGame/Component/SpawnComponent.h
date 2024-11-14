@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Struct/WaveSpawnData.h"
+#include "Struct/BoxData.h"
 #include "SpawnComponent.generated.h"
 
 
@@ -33,17 +35,30 @@ protected:
 
 protected:
 
+	void SetSpawnWave(int32 Wave);
+
 	void BoxSpawn();
 
 	void SetTimer();
 
 protected:
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = SpawnData)
+	UDataTable* SpawnDataTable;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Data")
+	TArray<FWaveSpawnData> DataArray;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
+	int32 CurrentWave;
+
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
 	int32 BoxCount;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
-	float SpawnDelay;
+	float SpawnTime;
 
 	FTimerHandle SpawnTimeHandle;
 

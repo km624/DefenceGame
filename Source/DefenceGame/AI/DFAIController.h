@@ -23,9 +23,12 @@ public:
 
 	virtual void OnPossess(APawn* InPawn) override;
 
+	virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Postion")
 	TObjectPtr<class AActor> TargetPostion;
+
+
 	
 };

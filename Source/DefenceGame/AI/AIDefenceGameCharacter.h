@@ -46,7 +46,5 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")
 	float CurrentHp;
 
-protected:
 
-	
 };

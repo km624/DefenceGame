@@ -3,6 +3,8 @@
 
 #include "AI/DFAIController.h"
 #include "Kismet/GameplayStatics.h"
+#include "Navigation/PathFollowingComponent.h"
+#include "GameFramework/Actor.h"
 
 ADFAIController::ADFAIController()
 {
@@ -31,6 +33,25 @@ void ADFAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
+	
 	//UE_LOG(LogTemp, Warning, TEXT("%s"), *InPawn->GetActorNameOrLabel());
 	MoveToActor(TargetPostion, 5.0f, true, true, true, 0, true);
+	
+	
+	
 }
+
+void ADFAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
+{
+	Super::OnMoveCompleted(RequestID, Result);
+	
+	if (Result.IsSuccess())
+	{
+		if (GetPawn())
+		{
+			GetPawn()->Destroy();
+		}
+	}
+	
+}
+
