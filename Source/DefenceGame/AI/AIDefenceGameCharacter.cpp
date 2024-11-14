@@ -40,15 +40,33 @@ AAIDefenceGameCharacter::AAIDefenceGameCharacter()
 
 }
 
+void AAIDefenceGameCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	ChangeHp(MaxHp);
+}
+
 void AAIDefenceGameCharacter::ChangeHp(float NewHp)
 {
 	//MAxHp 값 넘어가지 않도록 조절
 	CurrentHp = FMath::Clamp<float>(NewHp, 0.0f,MaxHp);
-
-	//델리게이트를 호출하는 역할
-	//멀티캐스트의 호출 방식
+	
+	
 	OnHpChanged.Broadcast(CurrentHp);
 }
+
+float AAIDefenceGameCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float returnValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	//UE_LOG(LogTemp, Warning, TEXT("Damage :%s"), *this->GetName());
+	
+	float Damaged = CurrentHp - Damage;
+	ChangeHp(Damaged);
+
+	return returnValue;
+
+}
+
 
 void AAIDefenceGameCharacter::SetupCharacterWidget(UUserWidget* InUserWidget)
 {

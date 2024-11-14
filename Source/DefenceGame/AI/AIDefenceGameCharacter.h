@@ -17,10 +17,14 @@ class DEFENCEGAME_API AAIDefenceGameCharacter : public ADefenceGameCharacter
 public:
 	AAIDefenceGameCharacter();
 
+public:
+	virtual void BeginPlay() override;
 	FORCEINLINE void SetMaxHp(float Newhp) { MaxHp = Newhp; }
 	FORCEINLINE float GetCurrentHp() { return CurrentHp; }
 
 	void ChangeHp(float NewHp);
+
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 
 public:
 	FOnHpChangedDelegate OnHpChanged;
@@ -32,8 +36,9 @@ protected:
 	TObjectPtr<class UDFWidgetComponent> HpBar;
 
 public:
-	
 	void SetupCharacterWidget(class UUserWidget* InUserWidget);
+
+	
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")

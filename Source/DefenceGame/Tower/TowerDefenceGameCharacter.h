@@ -31,7 +31,7 @@ public:
 
 
 public:
-   void SetUpTower();
+   void SetUpTower(class APlayerController* playerController);
 
 public:
 
@@ -43,6 +43,17 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower")
     float SpereSize;
+
+    UPROPERTY()
+    TObjectPtr<class APlayerController> PlayerController;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower")
+    float AttackDelay;
+
+    FTimerHandle AttackTimerHandle;
+
+protected:
+    void StartAttack();
 
 protected:
     UPROPERTY()

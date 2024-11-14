@@ -65,8 +65,7 @@ protected:
 	void OnInputStarted();
 	void OnSetDestinationTriggered();
 	void OnSetDestinationReleased();
-	/*void OnTouchTriggered();
-	void OnTouchReleased();*/
+
 	void SetCameraMove(const FInputActionValue& Value);
 
 private:
@@ -85,8 +84,9 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Preview")
 	TSubclassOf<class ATowerDefenceGameCharacter>PreviewActorClass;
-
+	
 	// 현재 프리뷰 액터 인스턴스
+	UPROPERTY()
 	TObjectPtr<class ATowerDefenceGameCharacter> PreviewActor;
 
 	// 그리드 매니저 참조
@@ -98,6 +98,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Preview")
 	FVector CanSpawnLocation;
+
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")

@@ -60,7 +60,7 @@ void ADefenceGamePlayerController::BeginPlay()
 	}
 	if (PreviewActorClass)
 	{
-		PreviewActor = GetWorld()->SpawnActor<ATowerDefenceGameCharacter>(PreviewActorClass, FVector::ZeroVector, FRotator::ZeroRotator);
+		//PreviewActor = GetWorld()->SpawnActor<ATowerDefenceGameCharacter>(PreviewActorClass, FVector::ZeroVector, FRotator::ZeroRotator);
 		/*if (PreviewActor)
 		{
 			PreviewActor->SetActorHiddenInGame(true);
@@ -74,7 +74,7 @@ void ADefenceGamePlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	UpdatePreview();
+	//UpdatePreview();
 }
 
 void ADefenceGamePlayerController::SetupInputComponent()
@@ -216,13 +216,13 @@ void ADefenceGamePlayerController::UpdatePreview()
 		else
 		{
 			bIsCanSpawn = false;
-			//PreviewActor->SetActorHiddenInGame(true);
+			PreviewActor->SetActorHiddenInGame(true);
 		}
 	}
 	else
 	{
 		bIsCanSpawn = false;
-		//PreviewActor->SetActorHiddenInGame(true);
+		PreviewActor->SetActorHiddenInGame(true);
 	}
 }
 
@@ -238,7 +238,7 @@ void ADefenceGamePlayerController::SetTower()
 		{
 			
 			ATowerDefenceGameCharacter* SpawnedActor = GetWorld()->SpawnActor<ATowerDefenceGameCharacter>(PreviewActorClass, CanSpawnLocation,PreviewActor->GetActorRotation());
-			SpawnedActor->SetUpTower();
+			SpawnedActor->SetUpTower(this);
 		}
 	}
 	
@@ -251,3 +251,5 @@ void ADefenceGamePlayerController::SetTowerRotaion(const FInputActionValue& Valu
 	
 	
 }
+
+

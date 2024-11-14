@@ -6,6 +6,7 @@
 #include "Components/BoxComponent.h"
 #include "Engine/Engine.h"
 #include "Components/CapsuleComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ATowerDefenceGameCharacter::ATowerDefenceGameCharacter()
 {
@@ -40,9 +41,11 @@ void ATowerDefenceGameCharacter::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
     DrawDebugSphere(GetWorld(), GetActorLocation()+(GetActorForwardVector()* DetectDistance), SpereSize,
         32, FColor::Red, false, 0.1f);
+
+    
 }
 
-void ATowerDefenceGameCharacter::SetUpTower()
+void ATowerDefenceGameCharacter::SetUpTower(APlayerController* playerController)
 {
     DetectionSphere->SetSphereRadius(SpereSize);
 
@@ -50,7 +53,26 @@ void ATowerDefenceGameCharacter::SetUpTower()
     FVector ForwardVector = GetActorForwardVector();
     FVector TargetPosition = ActorLocation + (ForwardVector * DetectDistance);
     DetectionSphere->SetWorldLocation(TargetPosition);
-    //DetectionSphere->SetRelativeLocation(GetActorForwardVector() * DetectDistance);
+
+    PlayerController = PlayerController;
+}
+
+    
+
+void ATowerDefenceGameCharacter::StartAttack()
+{
+    if (DetectBoxs.Num()>0)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Attack -> %s"), *DetectBoxs[0]->GetName());
+        UGameplayStatics::ApplyDamage(
+            DetectBoxs[0],
+            10.0f,
+            PlayerController,
+            this,
+            UDamageType::StaticClass()
+        );
+    }
+        
 }
 
 void ATowerDefenceGameCharacter::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -61,7 +83,14 @@ void ATowerDefenceGameCharacter::OnBeginOverlap(UPrimitiveComponent* OverlappedC
         if (!DetectBoxs.Contains(OtherActor))
         {
             DetectBoxs.Add(OtherActor);
-            UE_LOG(LogTemp, Warning, TEXT("Add: %s"), *OtherActor->GetName());
+            //UE_LOG(LogTemp, Warning, TEXT("Add: %s"), *OtherActor->GetName());
+
+            if (!AttackTimerHandle.IsValid())
+            {   
+                StartAttack();
+                GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, this, &ATowerDefenceGameCharacter::StartAttack, AttackDelay, true);
+            }
+                
         }
     }
 }
@@ -74,5 +103,10 @@ void ATowerDefenceGameCharacter::OnEndOverlap(UPrimitiveComponent* OverlappedCom
         {
             UE_LOG(LogTemp, Warning, TEXT("Delete: %s"), *OtherActor->GetName());
         }
+        if (DetectBoxs.Num()<0)
+        {
+            GetWorldTimerManager().ClearTimer(AttackTimerHandle);
+        }
+       
     }
 }
