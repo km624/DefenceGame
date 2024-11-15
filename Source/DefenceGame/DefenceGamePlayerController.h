@@ -6,6 +6,7 @@
 #include "Templates/SubclassOf.h"
 #include "GameFramework/PlayerController.h"
 #include "InputActionValue.h"
+#include "Struct/TowerData.h"
 #include "DefenceGamePlayerController.generated.h"
 
 /** Forward declaration to improve compiling times */
@@ -61,24 +62,22 @@ protected:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+protected:
+	void SetUpGridManager();
 
-
-	void SetCameraMove(const FInputActionValue& Value);
-
-private:
-	FVector CachedDestination;
-
-	bool bIsTouch; // Is it a touch device
-	float FollowTime; // For how long it has been pressed
+	void SetUpCamera();
+	
+	void SetUpPreview();
 
 protected:
 	// 마우스 위치에 따른 그리드 셀 계산
 	void UpdatePreview();
 
-	void SetTower();
+	void SpawnTower();
 
 	void SetTowerRotaion(const FInputActionValue& Value);
 protected:
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Preview")
 	TSubclassOf<class ATowerDefenceGameCharacter>PreviewActorClass;
 	
@@ -86,16 +85,29 @@ protected:
 	UPROPERTY()
 	TObjectPtr<class ATowerDefenceGameCharacter> PreviewActor;
 
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Tower)
+	UDataTable* TowerDataTable;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Data")
+	TArray<FTowerData> DataArray;
+
 	// 그리드 매니저 참조
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	TObjectPtr<class AGridManager> GridManager;
 	
 	UPROPERTY()
-	bool bIsCanSpawn;
+	uint8 bIsCanSpawn : 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Preview")
 	FVector CanSpawnLocation;
 
+	UPROPERTY()
+	float PreviewTowerMoney;
+
+
+protected:
+	void SetCameraMove(const FInputActionValue& Value);
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")

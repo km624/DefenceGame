@@ -1,20 +1,23 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "DefenceGamePlayerController.h"
-#include "GameFramework/Pawn.h"
-#include "Blueprint/AIBlueprintHelperLibrary.h"
+//#include "GameFramework/Pawn.h"
+//#include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "NiagaraSystem.h"
 #include "NiagaraFunctionLibrary.h"
 #include "DefenceGameCharacter.h"
 #include "Engine/World.h"
+#include "Engine/Engine.h"
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "EnhancedInputSubsystems.h"
-#include "Engine/LocalPlayer.h"
+//#include "Engine/LocalPlayer.h"
 #include "Grid/GridManager.h"
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
 #include "Tower/TowerDefenceGameCharacter.h"
+#include "Player/DFPlayerState.h"
+
 
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -24,11 +27,30 @@ ADefenceGamePlayerController::ADefenceGamePlayerController()
 	PrimaryActorTick.bCanEverTick = true;
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Default;
-	CachedDestination = FVector::ZeroVector;
-	FollowTime = 0.f;
 	
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;
+
+	//타워 데이타
+	FString contextString;
+	TArray<FTowerData*> RowArray;
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_Tower(TEXT("/Script/Engine.DataTable'/Game/DefenceGame/Data/DT_TowerData.DT_TowerData'"));
+	if (DT_Tower.Object)
+	{
+		TowerDataTable = DT_Tower.Object;
+	}
+	if (IsValid(TowerDataTable))
+	{
+		TowerDataTable->GetAllRows<FTowerData>(contextString, RowArray);
+		for (FTowerData* Row : RowArray)
+		{
+			if (Row)
+			{
+
+				DataArray.Add(*Row);
+			}
+		}
+	}
 }
 
 void ADefenceGamePlayerController::BeginPlay()
@@ -38,43 +60,58 @@ void ADefenceGamePlayerController::BeginPlay()
 
 	FInputModeGameAndUI GameAndUI;
 	SetInputMode(GameAndUI);
-	
-	//카메라 설정
-	TArray<AActor*> Actors;
-	
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "MainCamera", Actors);
 
-	if (Actors.Num())
-	{
-		
-		MainCamera = Actors[0];
-		SetViewTarget(MainCamera);
-
-	}
 	
-	// 그리드 매니저 찾기
-	for (TActorIterator<AGridManager> It(GetWorld()); It; ++It)
-	{
-		GridManager = *It;
-		break;
-	}
-	if (PreviewActorClass)
-	{
-		PreviewActor = GetWorld()->SpawnActor<ATowerDefenceGameCharacter>(PreviewActorClass, FVector::ZeroVector, FRotator::ZeroRotator);
-	//	/*if (PreviewActor)
-	//	{
-	//		PreviewActor->SetActorHiddenInGame(true);
-	}
+	
+	SetUpGridManager();
 
+	SetUpCamera();
+
+	SetUpPreview();
+	
 }
-
-
 
 void ADefenceGamePlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
 	UpdatePreview();
+}
+
+void ADefenceGamePlayerController::SetUpGridManager()
+{
+	// 그리드 매니저 찾기
+	for (TActorIterator<AGridManager> It(GetWorld()); It; ++It)
+	{
+		GridManager = *It;
+		break;
+	}
+}
+
+void ADefenceGamePlayerController::SetUpCamera()
+{
+	TArray<AActor*> Actors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "MainCamera", Actors);
+	if (Actors.Num())
+	{
+		MainCamera = Actors[0];
+		SetViewTarget(MainCamera);
+	}
+}
+
+void ADefenceGamePlayerController::SetUpPreview()
+{
+	if (PreviewActorClass)
+	{
+		//PreviewActor = GetWorld()->SpawnActor<ATowerDefenceGameCharacter>(PreviewActorClass, FVector::ZeroVector, FRotator::ZeroRotator);
+		PreviewActor = GetWorld()->SpawnActorDeferred<ATowerDefenceGameCharacter>(PreviewActorClass, FTransform());
+		if (PreviewActor)
+		{
+			PreviewTowerMoney = PreviewActor->InitializeTower(this, DataArray[0]);
+			PreviewActor->FinishSpawning(FTransform());
+		}
+
+	}
 }
 
 void ADefenceGamePlayerController::SetupInputComponent()
@@ -93,7 +130,7 @@ void ADefenceGamePlayerController::SetupInputComponent()
 	{
 		//// Setup mouse input events
 
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefenceGamePlayerController::SetTower);
+		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefenceGamePlayerController::SpawnTower);
 		
 		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &ADefenceGamePlayerController::OnSetDestinationTriggered);
 		
@@ -106,29 +143,6 @@ void ADefenceGamePlayerController::SetupInputComponent()
 	{
 		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
-}
-
-void ADefenceGamePlayerController::SetCameraMove(const FInputActionValue& Value)
-{
-	
-	FVector2D MovementVector = Value.Get<FVector2D>();
-
-	float InputSizeSquared = MovementVector.SquaredLength();
-	float MovementVectorSize = 1.0f;
-	float MovementVectorSizeSquared = MovementVector.SquaredLength();
-	if (MovementVectorSizeSquared > 1.0f)
-	{
-		MovementVector.Normalize();
-		MovementVectorSizeSquared = 1.0f;
-	}
-	else
-	{
-		MovementVectorSize = FMath::Sqrt(MovementVectorSizeSquared);
-	}
-
-	FVector MoveDirection = FVector(MovementVector.X, MovementVector.Y, 0.0f);
-	
-	MainCamera->AddActorLocalOffset(MoveDirection* CameraSpeed, true);
 }
 
 
@@ -161,7 +175,6 @@ void ADefenceGamePlayerController::UpdatePreview()
 		{
 			if (HitResult.GetActor()->ActorHasTag(TEXT("TowerSpawn")))
 			{
-				
 				// 셀 중심 위치 계산
 				FVector CellCenter = GridOrigin + FVector((Col + 0.5f) * GridManager->CellSize, (Row + 0.5f) * GridManager->CellSize, 190.0f);
 				CanSpawnLocation = CellCenter;
@@ -183,7 +196,7 @@ void ADefenceGamePlayerController::UpdatePreview()
 	}
 }
 
-void ADefenceGamePlayerController::SetTower()
+void ADefenceGamePlayerController::SpawnTower()
 {
 	if (bIsCanSpawn)
 	{
@@ -193,12 +206,24 @@ void ADefenceGamePlayerController::SetTower()
 		bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, Hit);
 		if (Hit.GetActor()->ActorHasTag(TEXT("TowerSpawn")))
 		{
-			
-			ATowerDefenceGameCharacter* SpawnedActor = GetWorld()->SpawnActor<ATowerDefenceGameCharacter>(PreviewActorClass, CanSpawnLocation,PreviewActor->GetActorRotation());
-			SpawnedActor->SetUpTower(this);
-			
-			Hit.GetActor()->Destroy();
-			bIsCanSpawn = false;
+			ADFPlayerState* playerState = Cast<ADFPlayerState>(PlayerState);
+
+			if (playerState->GetMoney() >= PreviewTowerMoney)
+			{
+				const FTransform SpawnTransform(PreviewActor->GetActorRotation(), CanSpawnLocation);
+				ATowerDefenceGameCharacter* SpawnedActor = GetWorld()->SpawnActorDeferred<ATowerDefenceGameCharacter>(PreviewActorClass, SpawnTransform);
+
+				if (SpawnedActor)
+				{
+					playerState->SetMoney(-(SpawnedActor->InitializeTower(this, DataArray[0])));
+					SpawnedActor->SetUpTower();
+					Hit.GetActor()->Destroy();
+					bIsCanSpawn = false;
+					SpawnedActor->FinishSpawning(SpawnTransform);
+				}
+			}
+			else
+				UE_LOG(LogTemp, Warning, TEXT("NoMoney"));
 		}
 	}
 	
@@ -211,5 +236,29 @@ void ADefenceGamePlayerController::SetTowerRotaion(const FInputActionValue& Valu
 	
 	
 }
+
+void ADefenceGamePlayerController::SetCameraMove(const FInputActionValue& Value)
+{
+
+	FVector2D MovementVector = Value.Get<FVector2D>();
+
+	float InputSizeSquared = MovementVector.SquaredLength();
+	float MovementVectorSize = 1.0f;
+	float MovementVectorSizeSquared = MovementVector.SquaredLength();
+	if (MovementVectorSizeSquared > 1.0f)
+	{
+		MovementVector.Normalize();
+		MovementVectorSizeSquared = 1.0f;
+	}
+	else
+	{
+		MovementVectorSize = FMath::Sqrt(MovementVectorSizeSquared);
+	}
+
+	FVector MoveDirection = FVector(MovementVector.X, MovementVector.Y, 0.0f);
+
+	MainCamera->AddActorLocalOffset(MoveDirection * CameraSpeed, true);
+}
+
 
 

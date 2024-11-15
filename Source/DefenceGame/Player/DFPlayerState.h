@@ -26,11 +26,12 @@ protected:
 public:
 	FORCEINLINE float GetMoney() { return CurrentMoney; }
 	
-	FORCEINLINE void AddMoney(float newMoney) { CurrentMoney += newMoney; OnMonaeyChanged.Broadcast(CurrentMoney); }
-	FORCEINLINE void MinusMoney(float newMoney) { CurrentMoney -= newMoney; OnMonaeyChanged.Broadcast(CurrentMoney); }
+	/*FORCEINLINE void AddMoney(float newMoney) { CurrentMoney += newMoney; OnMonaeyChanged.Broadcast(CurrentMoney); }
+	FORCEINLINE void MinusMoney(float newMoney) { CurrentMoney -= newMoney; UE_LOG(LogTemp,Warning,TEXT("CurrentMoney")OnMonaeyChanged.Broadcast(CurrentMoney); }*/
+	void SetMoney(float newMoney);
 
 public:
-	FOnMoneyChangedDelegate OnMonaeyChanged;
+	FOnMoneyChangedDelegate OnMoneyChanged;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Money")

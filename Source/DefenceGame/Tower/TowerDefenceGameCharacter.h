@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DefenceGameCharacter.h"
+#include "Struct/TowerData.h"
 #include "TowerDefenceGameCharacter.generated.h"
 
 /**
@@ -31,9 +32,12 @@ public:
 
 
 public:
-   void SetUpTower(class APlayerController* playerController);
+  float InitializeTower(class APlayerController* playerController, FTowerData newTowerData);
 
-public:
+
+    void SetUpTower();
+
+protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tower")
 	class USphereComponent* DetectionSphere;
@@ -44,13 +48,25 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower")
     float SpereSize;
 
-    UPROPERTY()
-    TObjectPtr<class APlayerController> PlayerController;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tower)
+    int32 CurrentLevel;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower")
+    float AttackDamage;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower")
     float AttackDelay;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tower)
+    float TowerMoney;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tower)
+    FTowerData TowerData;
+
     FTimerHandle AttackTimerHandle;
+
+    UPROPERTY()
+    TObjectPtr<class APlayerController> PlayerController;
 
 protected:
     void StartAttack();

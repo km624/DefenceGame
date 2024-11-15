@@ -23,6 +23,9 @@ public:
 	float AttackDistance;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tower)
+	float AttackSize;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tower)
 	float AttackDelay;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tower)

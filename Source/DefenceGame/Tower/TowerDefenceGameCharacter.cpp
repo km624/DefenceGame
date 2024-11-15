@@ -45,16 +45,37 @@ void ATowerDefenceGameCharacter::Tick(float DeltaTime)
     
 }
 
-void ATowerDefenceGameCharacter::SetUpTower(APlayerController* playerController)
+float ATowerDefenceGameCharacter::InitializeTower(APlayerController* playerController, FTowerData newTowerData)
+{
+    
+    TowerData = newTowerData;
+    DetectDistance = TowerData.AttackDistance;
+
+    SpereSize = TowerData.AttackSize;
+
+    CurrentLevel = TowerData.Level;
+
+    AttackDamage = TowerData.AttackDamage;
+
+    AttackDelay = TowerData.AttackDelay;
+
+    TowerMoney = TowerData.TowerMoney;
+
+    PlayerController = playerController;
+
+   
+
+    return TowerMoney;
+}
+
+void ATowerDefenceGameCharacter::SetUpTower()
 {
     DetectionSphere->SetSphereRadius(SpereSize);
-
     FVector ActorLocation = GetActorLocation();
     FVector ForwardVector = GetActorForwardVector();
+
     FVector TargetPosition = ActorLocation + (ForwardVector * DetectDistance);
     DetectionSphere->SetWorldLocation(TargetPosition);
-
-    PlayerController = PlayerController;
 }
 
     
@@ -66,7 +87,7 @@ void ATowerDefenceGameCharacter::StartAttack()
         UE_LOG(LogTemp, Warning, TEXT("Attack -> %s"), *DetectBoxs[0]->GetName());
         UGameplayStatics::ApplyDamage(
             DetectBoxs[0],
-            10.0f,
+            AttackDamage,
             PlayerController,
             this,
             UDamageType::StaticClass()
