@@ -61,10 +61,7 @@ protected:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-	/** Input handlers for SetDestination action. */
-	void OnInputStarted();
-	void OnSetDestinationTriggered();
-	void OnSetDestinationReleased();
+
 
 	void SetCameraMove(const FInputActionValue& Value);
 
