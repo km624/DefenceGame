@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DefenceGameCharacter.h"
+#include "Struct/BoxData.h"
 #include "AIDefenceGameCharacter.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnHpZeroDelegate);
@@ -38,13 +39,20 @@ protected:
 public:
 	void SetupCharacterWidget(class UUserWidget* InUserWidget);
 
-	
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")
 	float MaxHp;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")
 	float CurrentHp;
 
+public:
+	void SetUpBox(FBoxData newBoxData);
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")
+	FBoxData BoxData;
+	
 
 };

@@ -44,6 +44,7 @@ AAIDefenceGameCharacter::AAIDefenceGameCharacter()
 void AAIDefenceGameCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
 	ChangeHp(MaxHp);
 	TArray<AActor*> Actors;
 	
@@ -80,6 +81,11 @@ void AAIDefenceGameCharacter::SetupCharacterWidget(UUserWidget* InUserWidget)
 	OnHpChanged.AddUObject(HpBarWidget, &UBoxHpWidget::UpdateHpBar);
 	//OnStatChanged.AddUObject(HpBarWidget, &UABHpBarWidget::UpdateStat);
 
+}
+
+void AAIDefenceGameCharacter::SetUpBox(FBoxData newBoxData)
+{
+	BoxData = newBoxData;
 }
 
 

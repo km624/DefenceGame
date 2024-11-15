@@ -39,6 +39,9 @@ protected:
 
 	void BoxSpawn();
 
+	UFUNCTION()
+	void NextWave(AActor* DestroyedActor);
+	
 	void SetTimer();
 
 protected:
@@ -61,6 +64,13 @@ protected:
 	float SpawnTime;
 
 	FTimerHandle SpawnTimeHandle;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = SpawnBoxData)
+	UDataTable* BoxSpawnDataTable;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = BoxData)
+	TMap<FName , FBoxData> BoxDataMap;
 
 
 		

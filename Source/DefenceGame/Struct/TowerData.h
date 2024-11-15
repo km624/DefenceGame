@@ -25,5 +25,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tower)
 	float AttackDelay;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tower)
+	float TowerMoney;
 
 };
