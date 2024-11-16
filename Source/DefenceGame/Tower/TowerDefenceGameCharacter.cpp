@@ -4,9 +4,11 @@
 #include "Tower/TowerDefenceGameCharacter.h"
 #include "Components/SphereComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Engine/Engine.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Player/DFPlayerState.h"
 
 ATowerDefenceGameCharacter::ATowerDefenceGameCharacter()
 {
@@ -71,10 +73,12 @@ float ATowerDefenceGameCharacter::InitializeTower(APlayerController* playerContr
 
 void ATowerDefenceGameCharacter::SetUpTower()
 {
+
+    GetCapsuleComponent()->SetCollisionProfileName("Tower");
+
     DetectionSphere->SetSphereRadius(SpereSize);
     FVector ActorLocation = GetActorLocation();
     FVector ForwardVector = GetActorForwardVector();
-
     FVector TargetPosition = ActorLocation + (ForwardVector * DetectDistance);
     DetectionSphere->SetWorldLocation(TargetPosition);
 }
@@ -85,7 +89,7 @@ void ATowerDefenceGameCharacter::StartAttack()
 {
     if (DetectBoxs.Num()>0)
     {
-        UE_LOG(LogTemp, Warning, TEXT("Attack -> %s"), *DetectBoxs[0]->GetName());
+        //UE_LOG(LogTemp, Warning, TEXT("Attack -> %s"), *DetectBoxs[0]->GetName());
         UGameplayStatics::ApplyDamage(
             DetectBoxs[0],
             AttackDamage,
@@ -123,7 +127,7 @@ void ATowerDefenceGameCharacter::OnEndOverlap(UPrimitiveComponent* OverlappedCom
     {
         if (DetectBoxs.Remove(OtherActor) > 0)
         {
-            UE_LOG(LogTemp, Warning, TEXT("Delete: %s"), *OtherActor->GetName());
+            //UE_LOG(LogTemp, Warning, TEXT("Delete: %s"), *OtherActor->GetName());
         }
         if (DetectBoxs.Num()<0)
         {
@@ -132,3 +136,26 @@ void ATowerDefenceGameCharacter::OnEndOverlap(UPrimitiveComponent* OverlappedCom
        
     }
 }
+
+void ATowerDefenceGameCharacter::OptionWidget()
+{
+    K2_OptionWidget();
+   
+}
+
+void ATowerDefenceGameCharacter::TowerRemove()
+{
+    ADFPlayerState* playerState = Cast<ADFPlayerState>(PlayerController->PlayerState);
+    if (IsValid(playerState))
+    {
+        playerState->SetMoney(TowerMoney);
+        
+        Destroy();
+    }
+}
+
+
+
+
+
+

@@ -11,7 +11,7 @@ ADefenceGameGameMode::ADefenceGameGameMode()
 {
 
 	// set default controller to our Blueprinted controller
-	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerBPClass(TEXT("/Script/Engine.Blueprint'/Game/DefenceGame/Blueprint/BP_TopDownPlayerController.BP_TopDownPlayerController'"));
+	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerBPClass(TEXT("/Script/Engine.Blueprint'/Game/DefenceGame/Blueprint/BP_TopDownPlayerController.BP_TopDownPlayerController_C'"));
 	if(PlayerControllerBPClass.Class != NULL)
 	{
 		PlayerControllerClass = PlayerControllerBPClass.Class;

@@ -74,9 +74,18 @@ protected:
 	// 마우스 위치에 따른 그리드 셀 계산
 	void UpdatePreview();
 
+	void ClickMouseLeft();
+
 	void SpawnTower();
 
+	void ShowTowerOption();
+
 	void SetTowerRotaion(const FInputActionValue& Value);
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Tower)
+	TObjectPtr<class ATowerDefenceGameCharacter> SelectTower;
+
 protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Preview")
@@ -97,7 +106,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	TObjectPtr<class AGridManager> GridManager;
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Preview")
 	uint8 bIsCanSpawn : 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Preview")

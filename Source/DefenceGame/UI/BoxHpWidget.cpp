@@ -28,8 +28,7 @@ void UBoxHpWidget::NativeConstruct()
 
 		}
 	}
-	else
-		UE_LOG(LogTemp, Warning, TEXT("Failed"));
+	
 	
 }
 

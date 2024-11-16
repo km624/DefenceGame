@@ -82,7 +82,7 @@ bool AGridManager::CheckIfSpawnLocationIsOccupied(const FVector& Location)
         for (const FOverlapResult& Result : OverlapResults)
         {
             AActor* OverlappedActor = Result.GetActor();
-            if (OverlappedActor && OverlappedActor->ActorHasTag("Tower"))
+            if (OverlappedActor && OverlappedActor->ActorHasTag("TowerPosition"))
             {
                 
                 // "Tower" 태그를 가진 액터가 존재함

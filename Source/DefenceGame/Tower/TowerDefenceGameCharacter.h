@@ -29,7 +29,7 @@ protected:
 public:
     
     virtual void Tick(float DeltaTime) override;
-
+    
 
 public:
   float InitializeTower(class APlayerController* playerController, FTowerData newTowerData);
@@ -84,4 +84,17 @@ protected:
     UFUNCTION()
     void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
         UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+public:
+    UFUNCTION(BlueprintImplementableEvent, Category = TowerWidget, Meta = (DisplayName = "ShowOptionWidgetCpp"))
+    void K2_OptionWidget();
+
+    void OptionWidget();
+
+    UFUNCTION(BlueprintCallable, Category = "UI", Meta = (DisplayName = "TowerRemoveCpp"))
+    void TowerRemove();
+
+  
+
+
 };

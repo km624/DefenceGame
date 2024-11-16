@@ -53,6 +53,9 @@ public:
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")
 	FBoxData BoxData;
+
+protected:
+	
 	
 
 };

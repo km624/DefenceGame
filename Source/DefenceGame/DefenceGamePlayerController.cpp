@@ -110,10 +110,22 @@ void ADefenceGamePlayerController::SetUpPreview(TSubclassOf<class ATowerDefenceG
 	if (PreviewActorClass)
 	{
 		//PreviewActor = GetWorld()->SpawnActor<ATowerDefenceGameCharacter>(PreviewActorClass, FVector::ZeroVector, FRotator::ZeroRotator);
+		ADFPlayerState* playerState = Cast<ADFPlayerState>(PlayerState);
 		PreviewActor = GetWorld()->SpawnActorDeferred<ATowerDefenceGameCharacter>(PreviewActorClass, FTransform());
+		
 		if (PreviewActor)
 		{
 			PreviewTowerMoney = PreviewActor->InitializeTower(this, DataArray[0]);
+			
+			if (PreviewTowerMoney > playerState->GetMoney())
+			{
+				bSelectTower = false;
+				PreviewActorClass = NULL;
+				PreviewActor->Destroy();
+				UE_LOG(LogTemp, Warning, TEXT("NoMoney"));
+				return;
+			}
+
 			PreviewActor->SetActorHiddenInGame(true);
 			PreviewActor->FinishSpawning(FTransform());
 		
@@ -139,7 +151,7 @@ void ADefenceGamePlayerController::SetupInputComponent()
 	{
 		//// Setup mouse input events
 
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefenceGamePlayerController::SpawnTower);
+		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefenceGamePlayerController::ClickMouseLeft);
 		
 		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &ADefenceGamePlayerController::OnSetDestinationTriggered);
 		
@@ -169,6 +181,7 @@ void ADefenceGamePlayerController::UpdatePreview()
 		
 		if (HitResult.GetActor()->ActorHasTag(TEXT("TowerSpawn")))
 		{
+			
 			 //셀 중심 위치 계산
 			CanSpawnLocation = HitResult.GetActor()->GetActorLocation()+FVector(0.0f,0.0f,90.0f);
 			bIsCanSpawn = true;
@@ -219,6 +232,23 @@ void ADefenceGamePlayerController::UpdatePreview()
 	}
 }
 
+void ADefenceGamePlayerController::ClickMouseLeft()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Click"));
+	if (bSelectTower)
+	{
+		SpawnTower();
+	}
+		
+	else
+	{
+		ShowTowerOption();
+	}
+		
+	
+		
+}
+
 void ADefenceGamePlayerController::SpawnTower()
 {
 	if (bIsCanSpawn)
@@ -230,9 +260,7 @@ void ADefenceGamePlayerController::SpawnTower()
 		if (Hit.GetActor()->ActorHasTag(TEXT("TowerSpawn")))
 		{
 			ADFPlayerState* playerState = Cast<ADFPlayerState>(PlayerState);
-
-			if (playerState->GetMoney() >= PreviewTowerMoney)
-			{
+			
 				const FTransform SpawnTransform(PreviewActor->GetActorRotation(), CanSpawnLocation);
 				ATowerDefenceGameCharacter* SpawnedActor = GetWorld()->SpawnActorDeferred<ATowerDefenceGameCharacter>(PreviewActorClass, SpawnTransform);
 
@@ -243,11 +271,52 @@ void ADefenceGamePlayerController::SpawnTower()
 					Hit.GetActor()->Destroy();
 					bIsCanSpawn = false;
 					SpawnedActor->FinishSpawning(SpawnTransform);
+
+					
+					bSelectTower = false;
+					PreviewActorClass = NULL;
+					PreviewActor->Destroy();
 				}
+		}
+	}
+	
+}
+
+void ADefenceGamePlayerController::ShowTowerOption()
+{
+	FHitResult Hit;
+	bool bHitSuccessful = false;
+	bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, Hit);
+	if (Hit.GetActor()->ActorHasTag(TEXT("Tower")))
+	{
+		ATowerDefenceGameCharacter* select = Cast<ATowerDefenceGameCharacter>(Hit.GetActor());
+		if (SelectTower)
+		{
+			SelectTower->OptionWidget();
+			if (SelectTower == select)
+			{
+				SelectTower = NULL;
 			}
 			else
-				UE_LOG(LogTemp, Warning, TEXT("NoMoney"));
+			{
+				SelectTower = select;
+				SelectTower->OptionWidget();
+			}
 		}
+		else
+		{
+			SelectTower = select;
+			SelectTower->OptionWidget();
+		}
+	}
+	else
+	{
+		if (SelectTower)
+		{
+			SelectTower->OptionWidget();
+			SelectTower = NULL;
+		}
+		
 	}
 	
 }

@@ -100,6 +100,9 @@ void USpawnComponent::SetSpawnWave(int32 Wave)
 	UE_LOG(LogTemp, Warning, TEXT("%d Wave Start"), CurrentWave);
 
 	OnWaveChanged.Broadcast(CurrentWave);
+
+	GetWorld()->GetTimerManager().SetTimer(WaveTimerHandle, this, &ThisClass::BoxSpawn, false);
+
 	
 }
 

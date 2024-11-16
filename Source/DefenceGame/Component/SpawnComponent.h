@@ -70,6 +70,8 @@ protected:
 
 	FTimerHandle SpawnTimeHandle;
 
+	FTimerHandle WaveTimerHandle;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = SpawnBoxData)
 	UDataTable* BoxSpawnDataTable;
