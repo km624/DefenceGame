@@ -39,8 +39,9 @@ void ATowerDefenceGameCharacter::BeginPlay()
 void ATowerDefenceGameCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-    DrawDebugSphere(GetWorld(), GetActorLocation()+(GetActorForwardVector()* DetectDistance), SpereSize,
-        32, FColor::Red, false, 0.1f);
+    if(!IsHidden())
+        DrawDebugSphere(GetWorld(), GetActorLocation()+(GetActorForwardVector()* DetectDistance), SpereSize,
+            32, FColor::Red, false, 0.1f);
 
     
 }

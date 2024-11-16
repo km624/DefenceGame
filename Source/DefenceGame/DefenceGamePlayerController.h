@@ -67,7 +67,8 @@ protected:
 
 	void SetUpCamera();
 	
-	void SetUpPreview();
+	UFUNCTION(BlueprintCallable, Category = "UI", Meta = (DisplayName = "SetUpPreviewCpp"))
+	void SetUpPreview(TSubclassOf<class ATowerDefenceGameCharacter> TowerDefenceCharacterClass);
 
 protected:
 	// 마우스 위치에 따른 그리드 셀 계산
@@ -115,6 +116,37 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 	float CameraSpeed;
+
+
+public:
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI",Meta = (DisplayName="OnMoneyChangedCpp"))
+	void K2_OnMoneyChanged(float newMoney);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI", Meta = (DisplayName = "NoMoneyAlertCpp"))
+	void K2_NoMoneyAlert();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI", Meta = (DisplayName = "OnWaveChangedCpp"))
+	void K2_OnWaveChanged(int32 newWave);
+
+public:
+	UFUNCTION()
+	void OnMoneyChanged(float newMoney);
+	
+	UFUNCTION()
+	void OnWaveChanged(int32 newWave);
+
+	void NoMoneyAlert();
+
+public:
+	void SetMoneyWidget();
+	
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
+	TSubclassOf<class UUserWidget> HUDWidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
+	uint8 bSelectTower : 1;
+
 	
 };
 

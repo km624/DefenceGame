@@ -4,7 +4,8 @@
 #include "Component/SpawnComponent.h"
 #include "AI/AIDefenceGameCharacter.h"
 #include "AI/DFAIController.h"
-#include "Level/DFLevelScriptActor.h"
+#include "Engine/World.h"
+#include "DefenceGame/DefenceGamePlayerController.h"
 
 // Sets default values for this component's properties
 USpawnComponent::USpawnComponent()
@@ -56,6 +57,8 @@ void USpawnComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetDelegateToController();
+
 	SetSpawnWave(CurrentWave);
 
 	BoxSpawn();
@@ -72,6 +75,15 @@ void USpawnComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 }
 
 
+void USpawnComponent::SetDelegateToController()
+{
+	ADefenceGamePlayerController* playerController = Cast<ADefenceGamePlayerController>(GetWorld()->GetFirstPlayerController());
+	if (playerController)
+	{
+		OnWaveChanged.AddUObject(playerController, &ADefenceGamePlayerController::OnWaveChanged);
+	}
+}
+
 void USpawnComponent::SetSpawnWave(int32 Wave)
 {
 	if (DataArray.Num() > 0)
@@ -86,6 +98,8 @@ void USpawnComponent::SetSpawnWave(int32 Wave)
 		UE_LOG(LogTemp, Warning, TEXT("Array Empty"));
 
 	UE_LOG(LogTemp, Warning, TEXT("%d Wave Start"), CurrentWave);
+
+	OnWaveChanged.Broadcast(CurrentWave);
 	
 }
 

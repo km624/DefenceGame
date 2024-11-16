@@ -17,6 +17,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Tower/TowerDefenceGameCharacter.h"
 #include "Player/DFPlayerState.h"
+#include "Blueprint/UserWidget.h"
 
 
 
@@ -51,6 +52,11 @@ ADefenceGamePlayerController::ADefenceGamePlayerController()
 			}
 		}
 	}
+
+	//HUD
+	static ConstructorHelpers::FClassFinder<UUserWidget>WIDGET_HUD(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/DefenceGame/Blueprint/UI/BP_Hud.BP_Hud_C'"));
+	if (WIDGET_HUD.Class) 
+		HUDWidgetClass = WIDGET_HUD.Class;
 }
 
 void ADefenceGamePlayerController::BeginPlay()
@@ -61,21 +67,19 @@ void ADefenceGamePlayerController::BeginPlay()
 	FInputModeGameAndUI GameAndUI;
 	SetInputMode(GameAndUI);
 
-	
-	
 	SetUpGridManager();
 
 	SetUpCamera();
 
-	SetUpPreview();
+	//SetUpPreview();
 	
 }
 
 void ADefenceGamePlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	UpdatePreview();
+	if(bSelectTower)
+		UpdatePreview();
 }
 
 void ADefenceGamePlayerController::SetUpGridManager()
@@ -99,8 +103,10 @@ void ADefenceGamePlayerController::SetUpCamera()
 	}
 }
 
-void ADefenceGamePlayerController::SetUpPreview()
+
+void ADefenceGamePlayerController::SetUpPreview(TSubclassOf<class ATowerDefenceGameCharacter> TowerDefenceCharacterClass)
 {
+	PreviewActorClass = TowerDefenceCharacterClass;
 	if (PreviewActorClass)
 	{
 		//PreviewActor = GetWorld()->SpawnActor<ATowerDefenceGameCharacter>(PreviewActorClass, FVector::ZeroVector, FRotator::ZeroRotator);
@@ -108,11 +114,14 @@ void ADefenceGamePlayerController::SetUpPreview()
 		if (PreviewActor)
 		{
 			PreviewTowerMoney = PreviewActor->InitializeTower(this, DataArray[0]);
+			PreviewActor->SetActorHiddenInGame(true);
 			PreviewActor->FinishSpawning(FTransform());
+		
 		}
 
 	}
 }
+
 
 void ADefenceGamePlayerController::SetupInputComponent()
 {
@@ -158,36 +167,50 @@ void ADefenceGamePlayerController::UpdatePreview()
 	if (GetHitResultUnderCursor(ECC_Visibility, false, HitResult))
 	{
 		
-		FVector HitLocation = HitResult.Location;
-		
-		// 그리드 매니저 위치 기준으로 상대 위치 계산
-		FVector GridOrigin = GridManager->GetActorLocation();
-		FVector RelativeLocation = HitLocation - GridOrigin;
-		
-		// 그리드 셀 인덱스 계산
-		int32 Col = FMath::FloorToInt(RelativeLocation.X / GridManager->CellSize);
-		int32 Row = FMath::FloorToInt(RelativeLocation.Y / GridManager->CellSize);
-
-		//UE_LOG(LogTemp, Warning, TEXT("Col : %d , Row : %d"), Col, Row);
-
-		// 유효한 인덱스인지 확인
-		if (Col >= 0 && Col < GridManager->Columns && Row >= 0 && Row < GridManager->Rows)
+		if (HitResult.GetActor()->ActorHasTag(TEXT("TowerSpawn")))
 		{
-			if (HitResult.GetActor()->ActorHasTag(TEXT("TowerSpawn")))
-			{
-				// 셀 중심 위치 계산
-				FVector CellCenter = GridOrigin + FVector((Col + 0.5f) * GridManager->CellSize, (Row + 0.5f) * GridManager->CellSize, 190.0f);
-				CanSpawnLocation = CellCenter;
-				bIsCanSpawn = true;
-				PreviewActor->SetActorLocation(CellCenter);
-				PreviewActor->SetActorHiddenInGame(false);
-			}
+			 //셀 중심 위치 계산
+			CanSpawnLocation = HitResult.GetActor()->GetActorLocation()+FVector(0.0f,0.0f,90.0f);
+			bIsCanSpawn = true;
+			PreviewActor->SetActorLocation(CanSpawnLocation);
+			PreviewActor->SetActorHiddenInGame(false);
 		}
 		else
 		{
 			bIsCanSpawn = false;
 			PreviewActor->SetActorHiddenInGame(true);
 		}
+		
+		//FVector HitLocation = HitResult.Location;
+		//
+		//// 그리드 매니저 위치 기준으로 상대 위치 계산
+		//FVector GridOrigin = GridManager->GetActorLocation();
+		//FVector RelativeLocation = HitLocation - GridOrigin;
+		//
+		//// 그리드 셀 인덱스 계산
+		//int32 Col = FMath::FloorToInt(RelativeLocation.X / GridManager->CellSize);
+		//int32 Row = FMath::FloorToInt(RelativeLocation.Y / GridManager->CellSize);
+
+		////UE_LOG(LogTemp, Warning, TEXT("Col : %d , Row : %d"), Col, Row);
+
+		//// 유효한 인덱스인지 확인
+		//if (Col >= 0 && Col < GridManager->Columns && Row >= 0 && Row < GridManager->Rows)
+		//{
+		//	if (HitResult.GetActor()->ActorHasTag(TEXT("TowerSpawn")))
+		//	{
+		//		// 셀 중심 위치 계산
+		//		FVector CellCenter = GridOrigin + FVector((Col + 0.5f) * GridManager->CellSize, (Row + 0.5f) * GridManager->CellSize, 190.0f);
+		//		CanSpawnLocation = CellCenter;
+		//		bIsCanSpawn = true;
+		//		PreviewActor->SetActorLocation(CellCenter);
+		//		PreviewActor->SetActorHiddenInGame(false);
+		//	}
+		//}
+		//else
+		//{
+		//	bIsCanSpawn = false;
+		//	PreviewActor->SetActorHiddenInGame(true);
+		//}
 	}
 	else
 	{
@@ -258,6 +281,31 @@ void ADefenceGamePlayerController::SetCameraMove(const FInputActionValue& Value)
 	FVector MoveDirection = FVector(MovementVector.X, MovementVector.Y, 0.0f);
 
 	MainCamera->AddActorLocalOffset(MoveDirection * CameraSpeed, true);
+}
+
+void ADefenceGamePlayerController::OnMoneyChanged(float newMoney)
+{
+	K2_OnMoneyChanged(newMoney);
+	
+}
+
+void ADefenceGamePlayerController::OnWaveChanged(int32 newWave)
+{
+	K2_OnWaveChanged(newWave);
+	//UE_LOG(LogTemp, Warning, TEXT("WaveChange"));
+}
+
+void ADefenceGamePlayerController::NoMoneyAlert()
+{
+	K2_NoMoneyAlert();
+}
+
+void ADefenceGamePlayerController::SetMoneyWidget()
+{
+
+	ADFPlayerState* playerState = Cast<ADFPlayerState>(PlayerState);
+	playerState->OnMoneyChanged.AddUObject(this, &ThisClass::OnMoneyChanged);
+
 }
 
 

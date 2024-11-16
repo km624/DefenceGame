@@ -8,6 +8,7 @@
 #include "Struct/BoxData.h"
 #include "SpawnComponent.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnWaveChangedDelegate, int32 /*CurrentWave*/);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DEFENCEGAME_API USpawnComponent : public UActorComponent
@@ -34,6 +35,7 @@ protected:
 
 
 protected:
+	void SetDelegateToController();
 
 	void SetSpawnWave(int32 Wave);
 
@@ -43,6 +45,9 @@ protected:
 	void NextWave(AActor* DestroyedActor);
 	
 	void SetTimer();
+
+public:
+	FOnWaveChangedDelegate OnWaveChanged;
 
 protected:
 

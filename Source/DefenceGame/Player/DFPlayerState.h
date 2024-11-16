@@ -33,8 +33,14 @@ public:
 public:
 	FOnMoneyChangedDelegate OnMoneyChanged;
 
+private:
+
+	void SetDelegateToController();
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Money")
 	float CurrentMoney;
+
+
 	
 };
