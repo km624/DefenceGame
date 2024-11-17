@@ -37,14 +37,21 @@ protected:
 protected:
 	void SetDelegateToController();
 
+	void SpawnWaveDelay(int32 Wave);
+
 	void SetSpawnWave(int32 Wave);
 
 	void BoxSpawn();
 
 	UFUNCTION()
-	void NextWave(AActor* DestroyedActor);
+	void NextWave();
 	
 	void SetTimer();
+
+protected:
+	UFUNCTION()
+	void BoxOnDead(AActor* deadBox);
+
 
 public:
 	FOnWaveChangedDelegate OnWaveChanged;
@@ -71,6 +78,10 @@ protected:
 	FTimerHandle SpawnTimeHandle;
 
 	FTimerHandle WaveTimerHandle;
+
+	TArray <class AAIDefenceGameCharacter*> CurrentSpawnBox;
+
+
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = SpawnBoxData)

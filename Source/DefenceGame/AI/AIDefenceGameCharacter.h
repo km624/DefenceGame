@@ -23,7 +23,10 @@ public:
 	FORCEINLINE void SetMaxHp(float Newhp) { MaxHp = Newhp; }
 	FORCEINLINE float GetCurrentHp() { return CurrentHp; }
 
+	FORCEINLINE float GetBoxMoney() { return BoxMoney; }
 	void ChangeHp(float NewHp);
+
+	void OnDead();
 
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 
@@ -46,6 +49,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")
 	float CurrentHp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")
+	float BoxMoney;
 
 public:
 	void SetUpBox(FBoxData newBoxData);

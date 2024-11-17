@@ -46,7 +46,7 @@ void AAIDefenceGameCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	ChangeHp(MaxHp);
-	TArray<AActor*> Actors;
+	
 	
 }
 
@@ -55,8 +55,19 @@ void AAIDefenceGameCharacter::ChangeHp(float NewHp)
 	//MAxHp 값 넘어가지 않도록 조절
 	CurrentHp = FMath::Clamp<float>(NewHp, 0.0f,MaxHp);
 	
-	
 	OnHpChanged.Broadcast(CurrentHp);
+
+	if (CurrentHp <= 0.0f)
+	{
+		OnDead();
+	}
+}
+
+void AAIDefenceGameCharacter::OnDead()
+{
+	
+	OnHpZero.Broadcast();
+	Destroy();
 }
 
 float AAIDefenceGameCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -86,6 +97,9 @@ void AAIDefenceGameCharacter::SetupCharacterWidget(UUserWidget* InUserWidget)
 void AAIDefenceGameCharacter::SetUpBox(FBoxData newBoxData)
 {
 	BoxData = newBoxData;
+
+	MaxHp = BoxData.MaxHp;
+	BoxMoney = BoxData.Money;
 }
 
 

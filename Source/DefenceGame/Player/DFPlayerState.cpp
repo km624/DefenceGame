@@ -15,7 +15,7 @@ void ADFPlayerState::BeginPlay()
 	Super::BeginPlay();
 
 	SetDelegateToController();
-	float StartMoney = 30.0f;
+	float StartMoney = 50.0f;
 	SetMoney(StartMoney);
 	
 }
@@ -24,7 +24,7 @@ void ADFPlayerState::SetMoney(float newMoney)
 {
 	CurrentMoney += newMoney;
 	
-	UE_LOG(LogTemp, Warning, TEXT("CurrnetMoney: %f"), CurrentMoney);
+	//UE_LOG(LogTemp, Warning, TEXT("CurrnetMoney: %f"), CurrentMoney);
 	OnMoneyChanged.Broadcast(CurrentMoney);
 }
 

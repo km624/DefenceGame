@@ -128,7 +128,10 @@ void ADefenceGamePlayerController::SetUpPreview(TSubclassOf<class ATowerDefenceG
 
 			PreviewActor->SetActorHiddenInGame(true);
 			PreviewActor->FinishSpawning(FTransform());
+			
+			GetWorld()->GetWorldSettings()->SetTimeDilation(0.2f);
 		
+			
 		}
 
 	}
@@ -273,12 +276,16 @@ void ADefenceGamePlayerController::SpawnTower()
 					SpawnedActor->FinishSpawning(SpawnTransform);
 
 					
-					bSelectTower = false;
+					/*bSelectTower = false;
 					PreviewActorClass = NULL;
-					PreviewActor->Destroy();
+					PreviewActor->Destroy();*/
 				}
 		}
 	}
+	bSelectTower = false;
+	PreviewActorClass = NULL;
+	PreviewActor->Destroy();
+	GetWorld()->GetWorldSettings()->SetTimeDilation(1.0f);
 	
 }
 

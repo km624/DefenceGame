@@ -31,4 +31,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tower)
 	float TowerMoney;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tower)
+	float NextLevelTowerMoney;
+
+
+
 };

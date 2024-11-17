@@ -9,6 +9,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/DFPlayerState.h"
+#include "DefenceGame/DefenceGamePlayerController.h"
 
 ATowerDefenceGameCharacter::ATowerDefenceGameCharacter()
 {
@@ -63,6 +64,8 @@ float ATowerDefenceGameCharacter::InitializeTower(APlayerController* playerContr
     AttackDelay = TowerData.AttackDelay;
 
     TowerMoney = TowerData.TowerMoney;
+
+    NextLevelTowerMoney = TowerData.NextLevelTowerMoney;
 
     PlayerController = playerController;
 
@@ -152,6 +155,36 @@ void ATowerDefenceGameCharacter::TowerRemove()
         
         Destroy();
     }
+}
+
+void ATowerDefenceGameCharacter::TowerLevelUp(int32 Newlevel)
+{
+
+    ADefenceGamePlayerController* dfPlayerController = Cast<ADefenceGamePlayerController>(PlayerController);
+    ADFPlayerState* playerState = Cast<ADFPlayerState>(PlayerController->PlayerState);
+    if (Newlevel < 3)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("%d"), Newlevel);
+       
+        if (NextLevelTowerMoney > playerState->GetMoney())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("NoMoney"));
+        }
+        else
+        {
+            FTowerData newTowerData = dfPlayerController->GetDataArray(++Newlevel);
+            InitializeTower(PlayerController, newTowerData);
+            playerState->SetMoney(-TowerMoney);
+            SetUpTower();
+        }
+
+    }
+
+    dfPlayerController->SelectTower = NULL;
+    K2_OptionWidget();
+
+
+
 }
 
 

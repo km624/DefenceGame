@@ -61,6 +61,9 @@ protected:
     float TowerMoney;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tower)
+    float NextLevelTowerMoney;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tower)
     FTowerData TowerData;
 
     FTimerHandle AttackTimerHandle;
@@ -94,7 +97,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "UI", Meta = (DisplayName = "TowerRemoveCpp"))
     void TowerRemove();
 
-  
+    UFUNCTION(BlueprintCallable, Category = "UI", Meta = (DisplayName = "TowerLevelUpCpp"))
+    void TowerLevelUp(int32 Newlevel);
 
+   
 
 };

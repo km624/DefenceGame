@@ -6,6 +6,7 @@
 #include "AI/DFAIController.h"
 #include "Engine/World.h"
 #include "DefenceGame/DefenceGamePlayerController.h"
+#include "Player/DFPlayerState.h"
 
 // Sets default values for this component's properties
 USpawnComponent::USpawnComponent()
@@ -59,9 +60,10 @@ void USpawnComponent::BeginPlay()
 
 	SetDelegateToController();
 
-	SetSpawnWave(CurrentWave);
+	//SetSpawnWave(CurrentWave);
+	SpawnWaveDelay(CurrentWave);
 
-	BoxSpawn();
+	//BoxSpawn();
 	
 }
 
@@ -84,6 +86,15 @@ void USpawnComponent::SetDelegateToController()
 	}
 }
 
+void USpawnComponent::SpawnWaveDelay(int32 Wave)
+{
+	GetWorld()->GetTimerManager().SetTimer(WaveTimerHandle, [this, Wave]()
+		{
+			//BoxSpawn();
+			SetSpawnWave(Wave);
+		}, 3.0f, false);
+}
+
 void USpawnComponent::SetSpawnWave(int32 Wave)
 {
 	if (DataArray.Num() > 0)
@@ -100,8 +111,8 @@ void USpawnComponent::SetSpawnWave(int32 Wave)
 	UE_LOG(LogTemp, Warning, TEXT("%d Wave Start"), CurrentWave);
 
 	OnWaveChanged.Broadcast(CurrentWave);
-
-	GetWorld()->GetTimerManager().SetTimer(WaveTimerHandle, this, &ThisClass::BoxSpawn, false);
+	BoxSpawn();
+	//GetWorld()->GetTimerManager().SetTimer(SpawnTimeHandle, this, &ThisClass::BoxSpawn, false);
 
 	
 }
@@ -116,13 +127,9 @@ void USpawnComponent::BoxSpawn()
 		if (aiCharacter)
 		{
 			aiCharacter->SetUpBox(boxdData);
+			aiCharacter->OnDestroyed.AddDynamic(this, &USpawnComponent::BoxOnDead);
 			
-			if (BoxCount == 1)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Box Last"));
-				aiCharacter->OnDestroyed.AddDynamic(this, &USpawnComponent::NextWave);
-			}
-		
+			CurrentSpawnBox.Add(aiCharacter);
 
 			aiCharacter->FinishSpawning(SpawnTransform);
 		}
@@ -130,7 +137,7 @@ void USpawnComponent::BoxSpawn()
 		ADFAIController* aiController = GetWorld()->SpawnActor<ADFAIController>(ADFAIController::StaticClass(), StartPosition->GetActorLocation(), FRotator::ZeroRotator);
 		aiController->Possess(aiCharacter);
 	}
-
+	
 	BoxCount--;
 	if (BoxCount > 0)
 		SetTimer();
@@ -138,11 +145,12 @@ void USpawnComponent::BoxSpawn()
 
 }
 
-void USpawnComponent::NextWave(AActor* DestroyedActor)
+void USpawnComponent::NextWave()
 {
 	CurrentWave++;
-	SetSpawnWave(CurrentWave);
-	BoxSpawn();
+	SpawnWaveDelay(CurrentWave);
+	//SetSpawnWave(CurrentWave);
+	//BoxSpawn();
 }
 
 
@@ -152,6 +160,22 @@ void USpawnComponent::SetTimer()
 {
 
 	GetWorld()->GetTimerManager().SetTimer(SpawnTimeHandle, this, &USpawnComponent::BoxSpawn, SpawnTime);
+	
+}
+
+void USpawnComponent::BoxOnDead(AActor* deadBox)
+{
+	
+	ADefenceGamePlayerController* playerController = Cast<ADefenceGamePlayerController>(GetWorld()->GetFirstPlayerController());
+	ADFPlayerState* playerState = Cast<ADFPlayerState>(playerController->PlayerState);
+	AAIDefenceGameCharacter* DeadBox = Cast<AAIDefenceGameCharacter>(deadBox);
+	CurrentSpawnBox.Remove(DeadBox);
+	playerState->SetMoney(DeadBox->GetBoxMoney());
+
+	if (CurrentSpawnBox.Num() <= 0)
+	{
+		NextWave();
+	}
 	
 }
 

@@ -95,6 +95,10 @@ protected:
 	UPROPERTY()
 	TObjectPtr<class ATowerDefenceGameCharacter> PreviewActor;
 
+
+public:
+	FORCEINLINE FTowerData GetDataArray(int32 newlevel) { return DataArray[newlevel - 1]; }
+	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Tower)
 	UDataTable* TowerDataTable;
