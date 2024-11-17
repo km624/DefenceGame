@@ -5,6 +5,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "GameFramework/Actor.h"
+#include "Engine/World.h"
+#include "DefenceGame/DefenceGamePlayerController.h"
+#include "Player/DFPlayerState.h"
 
 ADFAIController::ADFAIController()
 {
@@ -49,6 +52,9 @@ void ADFAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowi
 	{
 		if (GetPawn())
 		{
+			ADefenceGamePlayerController* playerController = Cast<ADefenceGamePlayerController>(GetWorld()->GetFirstPlayerController());
+			ADFPlayerState* playerState = Cast<ADFPlayerState>(playerController->PlayerState);
+			playerState->SetCurrentLife(1);
 			GetPawn()->Destroy();
 		}
 	}

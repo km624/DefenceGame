@@ -376,11 +376,32 @@ void ADefenceGamePlayerController::NoMoneyAlert()
 	K2_NoMoneyAlert();
 }
 
+void ADefenceGamePlayerController::OnLifeChanged(int32 newLife)
+{
+	K2_OnLifeChanged(newLife);
+	UE_LOG(LogTemp, Warning, TEXT("LifeChange : %d"),newLife);
+}
+
+void ADefenceGamePlayerController::GameOver()
+{
+	K2_GameOver();
+	UE_LOG(LogTemp, Warning, TEXT("GameOver"));
+
+	//GetWorld()->GetWorldSettings()->SetTimeDilation(0.0f);
+}
+
 void ADefenceGamePlayerController::SetMoneyWidget()
 {
 
 	ADFPlayerState* playerState = Cast<ADFPlayerState>(PlayerState);
 	playerState->OnMoneyChanged.AddUObject(this, &ThisClass::OnMoneyChanged);
+
+}
+
+void ADefenceGamePlayerController::SetLifeWidget()
+{
+	ADFPlayerState* playerState = Cast<ADFPlayerState>(PlayerState);
+	playerState->OnLifeChanged.AddUObject(this, &ThisClass::OnLifeChanged);
 
 }
 

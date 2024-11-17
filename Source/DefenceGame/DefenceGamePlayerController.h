@@ -140,6 +140,13 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "UI", Meta = (DisplayName = "OnWaveChangedCpp"))
 	void K2_OnWaveChanged(int32 newWave);
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI", Meta = (DisplayName = "OnLifeChangedCpp"))
+	void K2_OnLifeChanged(int32 newLife);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI", Meta = (DisplayName = "GameOverCpp"))
+	void K2_GameOver();
+	
 
 public:
 	UFUNCTION()
@@ -150,8 +157,16 @@ public:
 
 	void NoMoneyAlert();
 
+	UFUNCTION()
+	void OnLifeChanged(int32 newLife);
+
+	void GameOver();
+	
+
 public:
 	void SetMoneyWidget();
+
+	void SetLifeWidget();
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")

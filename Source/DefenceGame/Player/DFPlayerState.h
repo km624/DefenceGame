@@ -10,6 +10,7 @@
  * 
  */
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnMoneyChangedDelegate, float /*CurrentMoney*/);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnLifeChangedDelegate, int32 /*CDurrentLife*/);
 
 UCLASS()
 class DEFENCEGAME_API ADFPlayerState : public APlayerState
@@ -25,13 +26,17 @@ protected:
 
 public:
 	FORCEINLINE float GetMoney() { return CurrentMoney; }
-	
+	FORCEINLINE int32 GetCurrentLife() { return CurrentLife; }
 	
 	void SetMoney(float newMoney);
 
+	void SetCurrentLife(int32 newLife);
+
+	void GameOver();
+
 public:
 	FOnMoneyChangedDelegate OnMoneyChanged;
-
+	FOnLifeChangedDelegate	OnLifeChanged;
 private:
 
 	void SetDelegateToController();
@@ -39,6 +44,9 @@ private:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Money")
 	float CurrentMoney;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Life")
+	int32 CurrentLife;
 
 
 	
