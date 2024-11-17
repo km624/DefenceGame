@@ -98,7 +98,7 @@ public:
     void TowerRemove();
 
     UFUNCTION(BlueprintCallable, Category = "UI", Meta = (DisplayName = "TowerLevelUpCpp"))
-    void TowerLevelUp(int32 Newlevel);
+    bool TowerLevelUp(int32 Newlevel);
 
    
 

@@ -157,7 +157,7 @@ void ATowerDefenceGameCharacter::TowerRemove()
     }
 }
 
-void ATowerDefenceGameCharacter::TowerLevelUp(int32 Newlevel)
+bool ATowerDefenceGameCharacter::TowerLevelUp(int32 Newlevel)
 {
 
     ADefenceGamePlayerController* dfPlayerController = Cast<ADefenceGamePlayerController>(PlayerController);
@@ -169,6 +169,10 @@ void ATowerDefenceGameCharacter::TowerLevelUp(int32 Newlevel)
         if (NextLevelTowerMoney > playerState->GetMoney())
         {
             UE_LOG(LogTemp, Warning, TEXT("NoMoney"));
+            dfPlayerController->SelectTower = NULL;
+            K2_OptionWidget();
+
+            return false;
         }
         else
         {
@@ -176,15 +180,19 @@ void ATowerDefenceGameCharacter::TowerLevelUp(int32 Newlevel)
             InitializeTower(PlayerController, newTowerData);
             playerState->SetMoney(-TowerMoney);
             SetUpTower();
+            dfPlayerController->SelectTower = NULL;
+            K2_OptionWidget();
+            return true;
         }
 
     }
-
-    dfPlayerController->SelectTower = NULL;
-    K2_OptionWidget();
-
-
-
+    else
+    {
+        dfPlayerController->SelectTower = NULL;
+        K2_OptionWidget();
+        return false;
+    }
+ 
 }
 
 
