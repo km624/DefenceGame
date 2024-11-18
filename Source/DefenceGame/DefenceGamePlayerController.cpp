@@ -332,7 +332,8 @@ void ADefenceGamePlayerController::ShowTowerOption()
 void ADefenceGamePlayerController::SetTowerRotaion(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
-	PreviewActor->SetActorRotation(FRotator(0.0f,PreviewActor->GetActorRotation().Yaw + 90.0f*MovementVector.X ,0.0f));
+	if(PreviewActor)
+		PreviewActor->SetActorRotation(FRotator(0.0f,PreviewActor->GetActorRotation().Yaw + 90.0f*MovementVector.X ,0.0f));
 	
 	
 }

@@ -81,7 +81,7 @@ float AAIDefenceGameCharacter::TakeDamage(float Damage, FDamageEvent const& Dama
 	
 	float Damaged = CurrentHp - Damage;
 	ChangeHp(Damaged);
-
+	HpBar->SetHiddenInGame(false);
 	return returnValue;
 
 }
