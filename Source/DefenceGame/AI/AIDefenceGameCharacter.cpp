@@ -6,7 +6,8 @@
 #include "Components/WidgetComponent.h"
 #include "UI/BoxHpWidget.h"
 #include "UI/DFWidgetComponent.h"
-
+#include "DefenceGame/DefenceGamePlayerController.h"
+#include "Player/DFPlayerState.h"
 
 AAIDefenceGameCharacter::AAIDefenceGameCharacter()
 {
@@ -65,7 +66,10 @@ void AAIDefenceGameCharacter::ChangeHp(float NewHp)
 
 void AAIDefenceGameCharacter::OnDead()
 {
-	
+	ADefenceGamePlayerController* playerController = Cast<ADefenceGamePlayerController>(GetWorld()->GetFirstPlayerController());
+	ADFPlayerState* playerState = Cast<ADFPlayerState>(playerController->PlayerState);
+
+	playerState->SetMoney(BoxMoney);
 	OnHpZero.Broadcast();
 	Destroy();
 }

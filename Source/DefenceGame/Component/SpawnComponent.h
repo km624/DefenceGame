@@ -75,9 +75,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
 	float SpawnTime;
 
+public:
+	
 	FTimerHandle SpawnTimeHandle;
 
+	
 	FTimerHandle WaveTimerHandle;
+
+protected:
 
 	TArray <class AAIDefenceGameCharacter*> CurrentSpawnBox;
 
@@ -91,5 +96,10 @@ protected:
 	TMap<FName , FBoxData> BoxDataMap;
 
 
+public:
+	void AllTimeHandleStop();
+
+protected:
+	uint8 bIsGameover : 1;
 		
 };

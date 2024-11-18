@@ -83,16 +83,21 @@ void USpawnComponent::SetDelegateToController()
 	if (playerController)
 	{
 		OnWaveChanged.AddUObject(playerController, &ADefenceGamePlayerController::OnWaveChanged);
+		playerController->SetSpawnComponent(this);
 	}
 }
 
 void USpawnComponent::SpawnWaveDelay(int32 Wave)
 {
+	if (bIsGameover)return;
+	UE_LOG(LogTemp, Warning, TEXT("DelayStrat"));
 	GetWorld()->GetTimerManager().SetTimer(WaveTimerHandle, [this, Wave]()
 		{
 			//BoxSpawn();
 			SetSpawnWave(Wave);
 		}, 3.0f, false);
+
+	
 }
 
 void USpawnComponent::SetSpawnWave(int32 Wave)
@@ -166,16 +171,24 @@ void USpawnComponent::SetTimer()
 void USpawnComponent::BoxOnDead(AActor* deadBox)
 {
 	
-	ADefenceGamePlayerController* playerController = Cast<ADefenceGamePlayerController>(GetWorld()->GetFirstPlayerController());
-	ADFPlayerState* playerState = Cast<ADFPlayerState>(playerController->PlayerState);
+	//ADefenceGamePlayerController* playerController = Cast<ADefenceGamePlayerController>(GetWorld()->GetFirstPlayerController());
+	//ADFPlayerState* playerState = Cast<ADFPlayerState>(playerController->PlayerState);
 	AAIDefenceGameCharacter* DeadBox = Cast<AAIDefenceGameCharacter>(deadBox);
 	CurrentSpawnBox.Remove(DeadBox);
-	playerState->SetMoney(DeadBox->GetBoxMoney());
+	//playerState->SetMoney(DeadBox->GetBoxMoney());
 
 	if (CurrentSpawnBox.Num() <= 0)
 	{
 		NextWave();
 	}
 	
+}
+
+void USpawnComponent::AllTimeHandleStop()
+{
+	bIsGameover = true;
+	SpawnTimeHandle.Invalidate();
+	WaveTimerHandle.Invalidate();
+	UE_LOG(LogTemp, Warning, TEXT("Handle Stop"));
 }
 

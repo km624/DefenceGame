@@ -175,6 +175,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
 	uint8 bSelectTower : 1;
 
+public:
+	void SetSpawnComponent(class USpawnComponent* spawn);
+
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnCoamponent")
+	TObjectPtr<class USpawnComponent> spawnComp;
 	
 };
 

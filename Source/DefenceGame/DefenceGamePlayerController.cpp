@@ -18,6 +18,7 @@
 #include "Tower/TowerDefenceGameCharacter.h"
 #include "Player/DFPlayerState.h"
 #include "Blueprint/UserWidget.h"
+#include "Component/SpawnComponent.h"
 
 
 
@@ -385,7 +386,10 @@ void ADefenceGamePlayerController::OnLifeChanged(int32 newLife)
 void ADefenceGamePlayerController::GameOver()
 {
 	K2_GameOver();
+	
 	UE_LOG(LogTemp, Warning, TEXT("GameOver"));
+	if (spawnComp)
+		spawnComp->AllTimeHandleStop();
 
 	//GetWorld()->GetWorldSettings()->SetTimeDilation(0.0f);
 }
@@ -403,6 +407,11 @@ void ADefenceGamePlayerController::SetLifeWidget()
 	ADFPlayerState* playerState = Cast<ADFPlayerState>(PlayerState);
 	playerState->OnLifeChanged.AddUObject(this, &ThisClass::OnLifeChanged);
 
+}
+
+void ADefenceGamePlayerController::SetSpawnComponent(USpawnComponent* spawn)
+{
+	spawnComp = spawn;
 }
 
 
