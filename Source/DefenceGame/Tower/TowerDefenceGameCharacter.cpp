@@ -11,6 +11,8 @@
 #include "Player/DFPlayerState.h"
 #include "DefenceGame/DefenceGamePlayerController.h"
 #include "Animation/AnimMontage.h"
+#include "Tower/SnowBall.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 ATowerDefenceGameCharacter::ATowerDefenceGameCharacter()
 {
@@ -111,6 +113,29 @@ void ATowerDefenceGameCharacter::SetUpTower()
 
     
 
+void ATowerDefenceGameCharacter::ShotSnowBall(AActor* TargetActor)
+{
+    // 목표 지점의 위치 가져오기
+    FVector TargetLocation = TargetActor->GetActorLocation();
+    FVector FiringLocation = GetActorLocation();
+
+    // 방향 계산
+    FVector Direction = (TargetLocation - FiringLocation).GetSafeNormal();
+
+    // 스폰 위치 설정 (캐릭터의 앞쪽)
+    FVector SpawnLocation = FiringLocation + (GetActorLocation().UpVector * 100.f); // 약간 앞쪽으로 스폰
+
+    FRotator SpawnRotation = Direction.Rotation();
+
+    // 총알 스폰
+    ASnowBall* Projectile = GetWorld()->SpawnActor<ASnowBall>(ProjectileClass, SpawnLocation, SpawnRotation);
+    if (Projectile)
+    {
+        // 속도 설정
+        Projectile->ProjectileMovement->Velocity = Direction * Projectile->ProjectileMovement->InitialSpeed;
+    }
+}
+
 void ATowerDefenceGameCharacter::StartAttack()
 {
     if (DetectBoxs.Num()>0)
@@ -118,6 +143,9 @@ void ATowerDefenceGameCharacter::StartAttack()
 
         UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
         AnimInstance->Montage_Play(AttackAMotion,1.3f);
+
+        ShotSnowBall(DetectBoxs[0]);
+
         //UE_LOG(LogTemp, Warning, TEXT("Attack -> %s"), *DetectBoxs[0]->GetName());
         UGameplayStatics::ApplyDamage(
             DetectBoxs[0],

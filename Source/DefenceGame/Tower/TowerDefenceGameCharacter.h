@@ -75,8 +75,14 @@ protected:
     TObjectPtr<class APlayerController> PlayerController;
 
 protected:
+    void ShotSnowBall(class AActor* TargetActor);
+
+protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tower)
     TObjectPtr<class UAnimMontage> AttackAMotion;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tower)
+    TSubclassOf<class ASnowBall> ProjectileClass;
 
 protected:
     void StartAttack();
