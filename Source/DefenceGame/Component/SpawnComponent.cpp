@@ -60,8 +60,8 @@ void USpawnComponent::BeginPlay()
 
 	SetDelegateToController();
 
-	//SetSpawnWave(CurrentWave);
-	SpawnWaveDelay(CurrentWave);
+	SetSpawnWave(CurrentWave);
+	//SpawnWaveDelay(CurrentWave);
 
 	//BoxSpawn();
 	
@@ -87,17 +87,49 @@ void USpawnComponent::SetDelegateToController()
 	}
 }
 
+//void USpawnComponent::SpawnWaveDelay(int32 Wave)
+//{
+//	if (bIsGameover)return;
+//	UE_LOG(LogTemp, Warning, TEXT("DelayStrat"));
+//	GetWorld()->GetTimerManager().SetTimer(WaveTimerHandle, [this, Wave]()
+//		{
+//			//BoxSpawn();
+//			SetSpawnWave(Wave);
+//		}, 3.0f, false);
+//
+//	
+//}
+//
+//void USpawnComponent::SetSpawnWave(int32 Wave)
+//{
+//	if (DataArray.Num() > 0)
+//	{
+//		CurrentWave = DataArray[Wave - 1].Wave;
+//
+//		BoxCount = DataArray[Wave - 1].SpawnCount;
+//
+//		SpawnTime = DataArray[Wave - 1].SpawnTime;
+//	}
+//	else
+//		UE_LOG(LogTemp, Warning, TEXT("Array Empty"));
+//
+//	UE_LOG(LogTemp, Warning, TEXT("%d Wave Start"), CurrentWave);
+//
+//	OnWaveChanged.Broadcast(CurrentWave);
+//	BoxSpawn();
+//	//GetWorld()->GetTimerManager().SetTimer(SpawnTimeHandle, this, &ThisClass::BoxSpawn, false);
+//
+//	
+//}
+
 void USpawnComponent::SpawnWaveDelay(int32 Wave)
 {
-	if (bIsGameover)return;
 	UE_LOG(LogTemp, Warning, TEXT("DelayStrat"));
-	GetWorld()->GetTimerManager().SetTimer(WaveTimerHandle, [this, Wave]()
+	GetWorld()->GetTimerManager().SetTimer(WaveTimerHandle, [this]()
 		{
-			//BoxSpawn();
-			SetSpawnWave(Wave);
+			SantaSpawn();
+			SetTimer();
 		}, 3.0f, false);
-
-	
 }
 
 void USpawnComponent::SetSpawnWave(int32 Wave)
@@ -115,11 +147,9 @@ void USpawnComponent::SetSpawnWave(int32 Wave)
 
 	UE_LOG(LogTemp, Warning, TEXT("%d Wave Start"), CurrentWave);
 
+	if (bIsGameover)return;
 	OnWaveChanged.Broadcast(CurrentWave);
-	BoxSpawn();
-	//GetWorld()->GetTimerManager().SetTimer(SpawnTimeHandle, this, &ThisClass::BoxSpawn, false);
-
-	
+	SpawnWaveDelay(CurrentWave);
 }
 
 void USpawnComponent::BoxSpawn()
@@ -150,12 +180,34 @@ void USpawnComponent::BoxSpawn()
 
 }
 
+void USpawnComponent::SantaSpawn()
+{
+	if (SpawnSanta && StartPosition)
+	{
+		const FTransform SpawnTransform(StartPosition->GetActorLocation());
+		FBoxData boxdData = BoxDataMap["Normal"];
+		AAIDefenceGameCharacter* aiCharacter = GetWorld()->SpawnActorDeferred<AAIDefenceGameCharacter>(SpawnSanta, SpawnTransform);
+		if (aiCharacter)
+		{
+			aiCharacter->SetUpBox(boxdData);
+			aiCharacter->OnDestroyed.AddDynamic(this, &USpawnComponent::BoxOnDead);
+
+			CurrentSpawnBox.Add(aiCharacter);
+
+			aiCharacter->FinishSpawning(SpawnTransform);
+		}
+
+		ADFAIController* aiController = GetWorld()->SpawnActor<ADFAIController>(ADFAIController::StaticClass(), StartPosition->GetActorLocation(), FRotator::ZeroRotator);
+		aiController->Possess(aiCharacter);
+	}
+}
+
 void USpawnComponent::NextWave()
 {
 	CurrentWave++;
-	SpawnWaveDelay(CurrentWave);
-	//SetSpawnWave(CurrentWave);
-	//BoxSpawn();
+	//SpawnWaveDelay(CurrentWave);
+	SetSpawnWave(CurrentWave);
+	
 }
 
 
@@ -171,11 +223,10 @@ void USpawnComponent::SetTimer()
 void USpawnComponent::BoxOnDead(AActor* deadBox)
 {
 	
-	//ADefenceGamePlayerController* playerController = Cast<ADefenceGamePlayerController>(GetWorld()->GetFirstPlayerController());
-	//ADFPlayerState* playerState = Cast<ADFPlayerState>(playerController->PlayerState);
+	
 	AAIDefenceGameCharacter* DeadBox = Cast<AAIDefenceGameCharacter>(deadBox);
 	CurrentSpawnBox.Remove(DeadBox);
-	//playerState->SetMoney(DeadBox->GetBoxMoney());
+	
 
 	if (CurrentSpawnBox.Num() <= 0)
 	{

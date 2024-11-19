@@ -52,9 +52,12 @@ void ADFAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowi
 	{
 		if (GetPawn())
 		{
-			ADefenceGamePlayerController* playerController = Cast<ADefenceGamePlayerController>(GetWorld()->GetFirstPlayerController());
-			ADFPlayerState* playerState = Cast<ADFPlayerState>(playerController->PlayerState);
-			playerState->SetCurrentLife(1);
+			if (GetPawn()->ActorHasTag("Box"))
+			{
+				ADefenceGamePlayerController* playerController = Cast<ADefenceGamePlayerController>(GetWorld()->GetFirstPlayerController());
+				ADFPlayerState* playerState = Cast<ADFPlayerState>(playerController->PlayerState);
+				playerState->SetCurrentLife(1);
+			}
 			GetPawn()->Destroy();
 		}
 	}

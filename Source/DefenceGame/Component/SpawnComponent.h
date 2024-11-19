@@ -33,6 +33,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
 	TSubclassOf<class ACharacter> SpawnCharacter;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
+	TSubclassOf<class ACharacter> SpawnSanta;
+
 
 protected:
 	void SetDelegateToController();
@@ -42,6 +45,8 @@ protected:
 	void SetSpawnWave(int32 Wave);
 
 	void BoxSpawn();
+
+	void SantaSpawn();
 
 	UFUNCTION()
 	void NextWave();
