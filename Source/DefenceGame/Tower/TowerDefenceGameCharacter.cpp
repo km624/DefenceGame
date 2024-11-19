@@ -10,21 +10,22 @@
 #include "Kismet/GameplayStatics.h"
 #include "Player/DFPlayerState.h"
 #include "DefenceGame/DefenceGamePlayerController.h"
+#include "Animation/AnimMontage.h"
 
 ATowerDefenceGameCharacter::ATowerDefenceGameCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
-	/*DetectionSphere->InitSphereRadius(SpereSize);
-    DetectionSphere->SetRelativeLocation(GetActorForwardVector() * DetectDistance);*/
+	//DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
+   
 
     //DetectionSphere->SetupAttachment(GetRootComponent());
-    DetectionSphere->SetupAttachment(GetCapsuleComponent());
-    //DetectionSphere->SetCollisionProfileName(TEXT("OverlapAll"));
-
     
-    DetectionSphere->SetGenerateOverlapEvents(true);
+
+    DetectionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("DetectionBox"));
+    DetectionBox->SetupAttachment(GetCapsuleComponent());
+    DetectionBox->SetGenerateOverlapEvents(true);
+   // DetectionSphere->SetGenerateOverlapEvents(true);
     AutoPossessAI = EAutoPossessAI::Disabled;
    
 }
@@ -34,17 +35,31 @@ void ATowerDefenceGameCharacter::BeginPlay()
     Super::BeginPlay();
 
    // SetUpTower();
-    DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &ATowerDefenceGameCharacter::OnBeginOverlap);
+   /* DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &ATowerDefenceGameCharacter::OnBeginOverlap);
    
-    DetectionSphere->OnComponentEndOverlap.AddDynamic(this, &ATowerDefenceGameCharacter::OnEndOverlap);
+    DetectionSphere->OnComponentEndOverlap.AddDynamic(this, &ATowerDefenceGameCharacter::OnEndOverlap);*/
+
+    DetectionBox->OnComponentBeginOverlap.AddDynamic(this, &ATowerDefenceGameCharacter::OnBeginOverlap);
+
+    DetectionBox->OnComponentEndOverlap.AddDynamic(this, &ATowerDefenceGameCharacter::OnEndOverlap);
 }
 
 void ATowerDefenceGameCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-    if(!IsHidden())
-        DrawDebugSphere(GetWorld(), GetActorLocation()+(GetActorForwardVector()* DetectDistance), SpereSize,
-            32, FColor::Red, false, 0.1f);
+    if (ShowDebug)
+    {
+       
+       /* DrawDebugSphere(GetWorld(), GetActorLocation() + (GetActorForwardVector() * DetectDistance), SpereSize,
+            32, FColor::Red, false, 0.1f);*/
+
+       
+        // 디버그 박스 그리기
+        DrawDebugBox(GetWorld(), GetActorLocation() + (GetActorForwardVector() * DetectDistance), FVector(SpereSize, SpereSize,50.0f), FColor::Green, false, 0.0f);
+      /*  DrawDebugBox(GetWorld(), GetActorLocation() + (GetActorForwardVector() * DetectDistance),s,
+            32, FColor::Red, false, 0.1f);*/
+    }
+      
 
     
 }
@@ -69,7 +84,7 @@ float ATowerDefenceGameCharacter::InitializeTower(APlayerController* playerContr
 
     PlayerController = playerController;
 
-   
+    ShowDebug = true;
 
     return TowerMoney;
 }
@@ -79,11 +94,19 @@ void ATowerDefenceGameCharacter::SetUpTower()
 
     GetCapsuleComponent()->SetCollisionProfileName("Tower");
 
-    DetectionSphere->SetSphereRadius(SpereSize);
+   // DetectionSphere->SetSphereRadius(SpereSize);
+    //DetectionSphere->SetWorldLocation(TargetPosition);
     FVector ActorLocation = GetActorLocation();
     FVector ForwardVector = GetActorForwardVector();
     FVector TargetPosition = ActorLocation + (ForwardVector * DetectDistance);
-    DetectionSphere->SetWorldLocation(TargetPosition);
+  
+
+   
+
+    DetectionBox->SetBoxExtent(FVector(SpereSize, SpereSize, 50.0f));
+    DetectionBox->SetWorldLocation(TargetPosition);
+
+    ShowDebug = false;
 }
 
     
@@ -92,6 +115,9 @@ void ATowerDefenceGameCharacter::StartAttack()
 {
     if (DetectBoxs.Num()>0)
     {
+
+        UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+        AnimInstance->Montage_Play(AttackAMotion,1.3f);
         //UE_LOG(LogTemp, Warning, TEXT("Attack -> %s"), *DetectBoxs[0]->GetName());
         UGameplayStatics::ApplyDamage(
             DetectBoxs[0],
@@ -135,6 +161,8 @@ void ATowerDefenceGameCharacter::OnEndOverlap(UPrimitiveComponent* OverlappedCom
         if (DetectBoxs.Num()<0)
         {
             GetWorldTimerManager().ClearTimer(AttackTimerHandle);
+            UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+            AnimInstance->Montage_Stop(1.0f,AttackAMotion);
         }
        
     }

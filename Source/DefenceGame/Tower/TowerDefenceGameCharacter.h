@@ -39,8 +39,11 @@ public:
 
 protected:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tower")
-	class USphereComponent* DetectionSphere;
+	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tower")
+	class USphereComponent* DetectionSphere;*/
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tower")
+    class UBoxComponent* DetectionBox;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower")
     float DetectDistance;
@@ -72,6 +75,10 @@ protected:
     TObjectPtr<class APlayerController> PlayerController;
 
 protected:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tower)
+    TObjectPtr<class UAnimMontage> AttackAMotion;
+
+protected:
     void StartAttack();
 
 protected:
@@ -99,6 +106,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "UI", Meta = (DisplayName = "TowerLevelUpCpp"))
     bool TowerLevelUp(int32 Newlevel);
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DebugBox")
+    uint8 ShowDebug : 1;
 
    
 
