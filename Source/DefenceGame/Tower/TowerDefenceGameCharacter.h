@@ -87,6 +87,11 @@ protected:
 protected:
     virtual void StartAttack();
 
+    UFUNCTION(BlueprintCallable)
+    virtual void TargetDestroy(AActor* destroyActor);
+
+   
+
 protected:
     UPROPERTY()
     TArray<class AActor*> DetectBoxs;

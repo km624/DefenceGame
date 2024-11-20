@@ -20,15 +20,23 @@ void ADFAIController::BeginPlay()
 	TArray<AActor*> Actors;
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "Position", Actors);
 	
-	for (auto& Actor : Actors)
+	FString BaseString = TEXT("AITargetPostion");
+	for (int j=1;j<Actors.Num()+1;j++)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("%s"), *Actor->GetActorNameOrLabel());
-		if (Actor->GetActorNameOrLabel() ==TEXT("AITargetPostion"))
+	
+		FString NewString = BaseString + FString::FromInt(j);
+		for (int i = 0; i < Actors.Num() ; i++)
 		{
-			TargetPostion = Actor;
-			break;
+			if (Actors[i]->GetActorNameOrLabel() == NewString)
+			{
+				TargetPositions.Add(Actors[i]->GetActorLocation());
+
+				//UE_LOG(LogTemp, Warning, TEXT("%s"),*NewString);
+			}
 		}
+
 	}
+	CurrentTargetPos = 1;
 
 }
 
@@ -38,9 +46,15 @@ void ADFAIController::OnPossess(APawn* InPawn)
 
 	
 	//UE_LOG(LogTemp, Warning, TEXT("%s"), *InPawn->GetActorNameOrLabel());
-	MoveToActor(TargetPostion, 5.0f, true, true, true, 0, true);
+	//MoveToActor(TargetPostion, 5.0f, true, true, true, 0, true);
 	
+	MoveBoxToLocation(CurrentTargetPos);
 	
+}
+
+void ADFAIController::MoveBoxToLocation(int32 pos)
+{
+	MoveToLocation(TargetPositions[pos - 1]);
 	
 }
 
@@ -52,13 +66,23 @@ void ADFAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowi
 	{
 		if (GetPawn())
 		{
-			if (GetPawn()->ActorHasTag("Box"))
+			if (CurrentTargetPos != TargetPositions.Num())
 			{
-				ADefenceGamePlayerController* playerController = Cast<ADefenceGamePlayerController>(GetWorld()->GetFirstPlayerController());
-				ADFPlayerState* playerState = Cast<ADFPlayerState>(playerController->PlayerState);
-				playerState->SetCurrentLife(1);
+				CurrentTargetPos++;
+				MoveBoxToLocation(CurrentTargetPos);
 			}
-			GetPawn()->Destroy();
+			else
+			{
+				if (GetPawn()->ActorHasTag("Box"))
+				{
+					ADefenceGamePlayerController* playerController = Cast<ADefenceGamePlayerController>(GetWorld()->GetFirstPlayerController());
+					ADFPlayerState* playerState = Cast<ADFPlayerState>(playerController->PlayerState);
+					playerState->SetCurrentLife(1);
+				}
+				GetPawn()->Destroy();
+
+			}
+
 		}
 	}
 	

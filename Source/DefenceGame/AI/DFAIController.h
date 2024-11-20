@@ -23,7 +23,16 @@ public:
 
 	virtual void OnPossess(APawn* InPawn) override;
 
+	void MoveBoxToLocation(int32 pos);
+
 	virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Postion")
+	TArray<FVector> TargetPositions;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Postion")
+	int32 CurrentTargetPos;
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Postion")

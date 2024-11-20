@@ -16,7 +16,7 @@ void ATowerDefenceGameType2Character::StartAttack()
         for (int32 i = 0; i < CurrentDetectBoxs; i++)
         {
                 ShotSnowBall(DetectBoxs[i]);
-                DetectBoxs[i]->OnDestroyed.AddDynamic(this, &ThisClass::TargetDestroy);
+                //DetectBoxs[i]->OnDestroyed.AddDynamic(this, &ThisClass::TargetDestroy);
                 UGameplayStatics::ApplyDamage(
                     DetectBoxs[i],
                     AttackDamage,
@@ -37,7 +37,9 @@ void ATowerDefenceGameType2Character::StartAttack()
 
 void ATowerDefenceGameType2Character::TargetDestroy(AActor* destroyActor)
 {
-    DetectBoxs.Remove(destroyActor);
+    Super::TargetDestroy(destroyActor);
+   //DetectBoxs.Remove(destroyActor);
+ 
     
     bIsTargetDestroy = true;
 

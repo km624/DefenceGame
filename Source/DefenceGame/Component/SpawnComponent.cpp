@@ -137,11 +137,11 @@ FName USpawnComponent::SelectBox()
 	{
 		if (RandomValue <= Cumulative[i])
 		{
-			UE_LOG(LogTemp, Warning, TEXT("select Box = %s"), *Keys[i].ToString());
+			//UE_LOG(LogTemp, Warning, TEXT("select Box = %s"), *Keys[i].ToString());
 			return Keys[i];
 		}
 	}
-	UE_LOG(LogTemp, Warning, TEXT("End"));
+	//UE_LOG(LogTemp, Warning, TEXT("End"));
 	return FName(); // 안전 장치: 아무것도 선택되지 않으면 빈 이름 반환
 }
 

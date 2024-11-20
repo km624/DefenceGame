@@ -17,8 +17,8 @@ class DEFENCEGAME_API ATowerDefenceGameType2Character : public ATowerDefenceGame
 protected:
 	virtual void StartAttack() override;
 
-	UFUNCTION()
-	void TargetDestroy(AActor* destroyActor);
+	
+	virtual void TargetDestroy(AActor* destroyActor) override;
 
 protected:
 	bool bIsTargetDestroy;

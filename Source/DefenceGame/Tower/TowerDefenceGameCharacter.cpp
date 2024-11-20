@@ -145,7 +145,7 @@ void ATowerDefenceGameCharacter::StartAttack()
         AnimInstance->Montage_Play(AttackAMotion,1.3f);
 
         ShotSnowBall(DetectBoxs[0]);
-
+        //DetectBoxs[0]->OnDestroyed.AddDynamic(this, &ThisClass::TargetDestroy);
         //UE_LOG(LogTemp, Warning, TEXT("Attack -> %s"), *DetectBoxs[0]->GetName());
         UGameplayStatics::ApplyDamage(
             DetectBoxs[0],
@@ -161,6 +161,14 @@ void ATowerDefenceGameCharacter::StartAttack()
         
 }
 
+void ATowerDefenceGameCharacter::TargetDestroy(AActor* destroyActor)
+{
+    DetectBoxs.Remove(destroyActor);
+
+   // bIsTargetDestroy = true;
+
+}
+
 void ATowerDefenceGameCharacter::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
     if (OtherActor && (OtherActor != this))
@@ -170,7 +178,7 @@ void ATowerDefenceGameCharacter::OnBeginOverlap(UPrimitiveComponent* OverlappedC
         {
             DetectBoxs.Add(OtherActor);
             //UE_LOG(LogTemp, Warning, TEXT("Add: %s"), *OtherActor->GetName());
-
+            OtherActor->OnDestroyed.AddDynamic(this, &ThisClass::TargetDestroy);
             if (!AttackTimerHandle.IsValid())
             {   
                 StartAttack();
