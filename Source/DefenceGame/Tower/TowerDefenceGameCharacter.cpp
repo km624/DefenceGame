@@ -153,7 +153,10 @@ void ATowerDefenceGameCharacter::StartAttack()
             PlayerController,
             this,
             UDamageType::StaticClass()
+
         );
+
+       
     }
         
 }
@@ -186,6 +189,7 @@ void ATowerDefenceGameCharacter::OnEndOverlap(UPrimitiveComponent* OverlappedCom
         {
             //UE_LOG(LogTemp, Warning, TEXT("Delete: %s"), *OtherActor->GetName());
         }
+
         if (DetectBoxs.Num()<0)
         {
             GetWorldTimerManager().ClearTimer(AttackTimerHandle);

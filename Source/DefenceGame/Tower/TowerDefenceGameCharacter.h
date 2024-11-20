@@ -32,7 +32,7 @@ public:
     
 
 public:
-  float InitializeTower(class APlayerController* playerController, FTowerData newTowerData);
+  virtual float InitializeTower(class APlayerController* playerController, FTowerData newTowerData);
 
 
     void SetUpTower();
@@ -85,7 +85,7 @@ protected:
     TSubclassOf<class ASnowBall> ProjectileClass;
 
 protected:
-    void StartAttack();
+    virtual void StartAttack();
 
 protected:
     UPROPERTY()
