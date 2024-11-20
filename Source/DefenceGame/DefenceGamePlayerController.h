@@ -43,12 +43,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* SetTowerRotaionAction;
 
-	/** Jump Input Action */
-	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	UInputAction* SetDestinationTouchAction;*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* IACameraMove;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* IACameraWheelMove;
 
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
@@ -122,6 +122,8 @@ protected:
 
 protected:
 	void SetCameraMove(const FInputActionValue& Value);
+
+	void SetCameraHeight(const FInputActionValue& Value);
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
