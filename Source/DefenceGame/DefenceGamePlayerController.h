@@ -132,6 +132,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 	float CameraSpeed;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+	TObjectPtr<class AActor> LeftDownPos;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+	TObjectPtr<class AActor> RightUpPos;
 
 public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "UI",Meta = (DisplayName="OnMoneyChangedCpp"))

@@ -102,6 +102,20 @@ void ADefenceGamePlayerController::SetUpCamera()
 		MainCamera = Actors[0];
 		SetViewTarget(MainCamera);
 	}
+	TArray<AActor*> Actors1;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "LeftDown", Actors1);
+	if (Actors.Num())
+	{
+		LeftDownPos = Actors1[0];
+		
+	}
+	TArray<AActor*> Actors2;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "RightUp", Actors2);
+	if (Actors.Num())
+	{
+		RightUpPos = Actors2[0];
+		
+	}
 }
 
 
@@ -312,6 +326,8 @@ void ADefenceGamePlayerController::SetCameraMove(const FInputActionValue& Value)
 {
 
 	FVector2D MovementVector = Value.Get<FVector2D>();
+	
+	
 
 	//float InputSizeSquared = MovementVector.SquaredLength();
 	float MovementVectorSize = 1.0f;
@@ -327,8 +343,26 @@ void ADefenceGamePlayerController::SetCameraMove(const FInputActionValue& Value)
 	}
 
 	FVector MoveDirection = FVector(MovementVector.X, MovementVector.Y, 0.0f);
-
+	
 	MainCamera->AddActorLocalOffset(MoveDirection * CameraSpeed, true);
+
+	//범위 설정
+	FVector MainCameraLocation = MainCamera->GetActorLocation();
+
+	if (MainCameraLocation.Y< LeftDownPos->GetActorLocation().Y || MainCameraLocation.Y> RightUpPos->GetActorLocation().Y)
+	{
+		MainCameraLocation.Y = FMath::Clamp(MainCameraLocation.Y, LeftDownPos->GetActorLocation().Y, RightUpPos->GetActorLocation().Y);
+		MainCamera->SetActorLocation(MainCameraLocation);
+	}
+		
+	if (MainCameraLocation.X < LeftDownPos->GetActorLocation().X || MainCameraLocation.X> RightUpPos->GetActorLocation().X)
+	{
+		MainCameraLocation.X = FMath::Clamp(MainCameraLocation.X, LeftDownPos->GetActorLocation().X, RightUpPos->GetActorLocation().X);
+		MainCamera->SetActorLocation(MainCameraLocation);
+	}
+
+
+	
 }
 
 void ADefenceGamePlayerController::SetCameraHeight(const FInputActionValue& Value)
@@ -336,7 +370,7 @@ void ADefenceGamePlayerController::SetCameraHeight(const FInputActionValue& Valu
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
 	FVector NewLocation = MainCamera->GetActorLocation();
-	NewLocation.Z -= MovementVector.Y * 15.0f;  // Z축만 변경
+	NewLocation.Z -= MovementVector.Y * 20.0f;  // Z축만 변경
 	NewLocation.Z = FMath::Clamp(NewLocation.Z, 500.0f, 1000.0f);
 	
 
