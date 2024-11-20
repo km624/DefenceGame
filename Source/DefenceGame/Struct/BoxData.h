@@ -23,4 +23,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Box)
 	float Money;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Box)
+	TObjectPtr<UStaticMesh> boxMesh;
+
 };

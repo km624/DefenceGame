@@ -22,6 +22,9 @@ struct FWaveSpawnData : public FTableRowBase
 	 UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Wave)
 	 int32 SpawnCount;
 
+	 UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Wave)
+	 TMap<FName, float> BoxPercent;
+
 	 
 
 

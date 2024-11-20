@@ -8,7 +8,7 @@
 #include "DefenceGame/DefenceGamePlayerController.h"
 #include "Player/DFPlayerState.h"
 
-// Sets default values for this component's properties
+
 USpawnComponent::USpawnComponent()
 {
 	//PrimaryComponentTick.bCanEverTick = true;
@@ -53,7 +53,7 @@ USpawnComponent::USpawnComponent()
 }
 
 
-// Called when the game starts
+
 void USpawnComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -61,14 +61,9 @@ void USpawnComponent::BeginPlay()
 	SetDelegateToController();
 
 	SetSpawnWave(CurrentWave);
-	//SpawnWaveDelay(CurrentWave);
-
-	//BoxSpawn();
 	
 }
 
-
-// Called every frame
 void USpawnComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -86,41 +81,6 @@ void USpawnComponent::SetDelegateToController()
 		playerController->SetSpawnComponent(this);
 	}
 }
-
-//void USpawnComponent::SpawnWaveDelay(int32 Wave)
-//{
-//	if (bIsGameover)return;
-//	UE_LOG(LogTemp, Warning, TEXT("DelayStrat"));
-//	GetWorld()->GetTimerManager().SetTimer(WaveTimerHandle, [this, Wave]()
-//		{
-//			//BoxSpawn();
-//			SetSpawnWave(Wave);
-//		}, 3.0f, false);
-//
-//	
-//}
-//
-//void USpawnComponent::SetSpawnWave(int32 Wave)
-//{
-//	if (DataArray.Num() > 0)
-//	{
-//		CurrentWave = DataArray[Wave - 1].Wave;
-//
-//		BoxCount = DataArray[Wave - 1].SpawnCount;
-//
-//		SpawnTime = DataArray[Wave - 1].SpawnTime;
-//	}
-//	else
-//		UE_LOG(LogTemp, Warning, TEXT("Array Empty"));
-//
-//	UE_LOG(LogTemp, Warning, TEXT("%d Wave Start"), CurrentWave);
-//
-//	OnWaveChanged.Broadcast(CurrentWave);
-//	BoxSpawn();
-//	//GetWorld()->GetTimerManager().SetTimer(SpawnTimeHandle, this, &ThisClass::BoxSpawn, false);
-//
-//	
-//}
 
 void USpawnComponent::SpawnWaveDelay(int32 Wave)
 {
@@ -152,12 +112,46 @@ void USpawnComponent::SetSpawnWave(int32 Wave)
 	SpawnWaveDelay(CurrentWave);
 }
 
+FName USpawnComponent::SelectBox()
+{
+	TArray<FName> Keys;
+	TArray<float> Values;
+	// 누적 확률 계산
+	TArray<float> Cumulative;
+
+	DataArray[CurrentWave-1].BoxPercent.GenerateKeyArray(Keys);
+	DataArray[CurrentWave-1].BoxPercent.GenerateValueArray(Values);
+	
+	float Total = 0.0f;
+
+	for (float Value : Values)
+	{
+		Total += Value;
+		Cumulative.Add(Total);
+	}
+
+	float RandomValue = FMath::FRand() * Total;
+
+	// 랜덤 값에 해당하는 액터 선택
+	for (int32 i = 0; i < Cumulative.Num(); i++)
+	{
+		if (RandomValue <= Cumulative[i])
+		{
+			UE_LOG(LogTemp, Warning, TEXT("select Box = %s"), *Keys[i].ToString());
+			return Keys[i];
+		}
+	}
+	UE_LOG(LogTemp, Warning, TEXT("End"));
+	return FName(); // 안전 장치: 아무것도 선택되지 않으면 빈 이름 반환
+}
+
 void USpawnComponent::BoxSpawn()
 {
 	if (SpawnCharacter && StartPosition)
 	{
 		const FTransform SpawnTransform(StartPosition->GetActorLocation());
-		FBoxData boxdData = BoxDataMap["Normal"];
+		FName BoxSelect = SelectBox();
+		FBoxData boxdData = BoxDataMap[BoxSelect];
 		AAIDefenceGameCharacter* aiCharacter = GetWorld()->SpawnActorDeferred<AAIDefenceGameCharacter>(SpawnCharacter, SpawnTransform);
 		if (aiCharacter)
 		{
@@ -205,11 +199,10 @@ void USpawnComponent::SantaSpawn()
 void USpawnComponent::NextWave()
 {
 	CurrentWave++;
-	//SpawnWaveDelay(CurrentWave);
+	
 	SetSpawnWave(CurrentWave);
 	
 }
-
 
 
 

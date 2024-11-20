@@ -42,6 +42,13 @@ protected:
 public:
 	void SetupCharacterWidget(class UUserWidget* InUserWidget);
 
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<class UStaticMeshComponent> StaticComp;
+
+	TObjectPtr<UStaticMesh> staticMesh;
+
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")

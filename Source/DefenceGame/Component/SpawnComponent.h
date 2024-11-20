@@ -44,6 +44,8 @@ protected:
 
 	void SetSpawnWave(int32 Wave);
 
+	FName SelectBox();
+
 	void BoxSpawn();
 
 	void SantaSpawn();

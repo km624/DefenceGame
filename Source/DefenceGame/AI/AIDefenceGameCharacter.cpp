@@ -8,6 +8,7 @@
 #include "UI/DFWidgetComponent.h"
 #include "DefenceGame/DefenceGamePlayerController.h"
 #include "Player/DFPlayerState.h"
+#include "Components/StaticMeshComponent.h"
 
 AAIDefenceGameCharacter::AAIDefenceGameCharacter()
 {
@@ -39,6 +40,9 @@ AAIDefenceGameCharacter::AAIDefenceGameCharacter()
 		//충돌처리x
 		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+
+	StaticComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static_comp"));
+	StaticComp->SetupAttachment(GetRootComponent());
 
 }
 
@@ -104,6 +108,11 @@ void AAIDefenceGameCharacter::SetUpBox(FBoxData newBoxData)
 
 	MaxHp = BoxData.MaxHp;
 	BoxMoney = BoxData.Money;
+
+	staticMesh = BoxData.boxMesh;
+
+	StaticComp->SetStaticMesh(staticMesh);
+	
 }
 
 
