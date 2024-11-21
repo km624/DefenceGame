@@ -153,6 +153,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "UI", Meta = (DisplayName = "GameOverCpp"))
 	void K2_GameOver();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI", Meta = (DisplayName = "GameClearCpp"))
+	void K2_GameClear();
 	
 
 public:
@@ -168,7 +171,9 @@ public:
 	void OnLifeChanged(int32 newLife);
 
 	void GameOver();
-	
+
+	UFUNCTION()
+	void OnWaveCleared();
 
 public:
 	void SetMoneyWidget();

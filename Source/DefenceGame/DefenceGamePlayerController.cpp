@@ -413,6 +413,11 @@ void ADefenceGamePlayerController::GameOver()
 	//GetWorld()->GetWorldSettings()->SetTimeDilation(0.0f);
 }
 
+void ADefenceGamePlayerController::OnWaveCleared()
+{
+	K2_GameClear();
+}
+
 void ADefenceGamePlayerController::SetMoneyWidget()
 {
 

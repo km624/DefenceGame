@@ -9,6 +9,7 @@
 #include "SpawnComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnWaveChangedDelegate, int32 /*CurrentWave*/);
+DECLARE_MULTICAST_DELEGATE(FOnWaveClearedDelegate);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DEFENCEGAME_API USpawnComponent : public UActorComponent
@@ -63,6 +64,12 @@ protected:
 public:
 	FOnWaveChangedDelegate OnWaveChanged;
 
+	FOnWaveClearedDelegate OnWaveCleared;
+
+
+public:
+	
+
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = SpawnData)
@@ -71,6 +78,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Data")
 	TArray<FWaveSpawnData> DataArray;
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
+	int32 MaxWave;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
 	int32 CurrentWave;

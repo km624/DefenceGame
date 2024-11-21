@@ -33,6 +33,8 @@ USpawnComponent::USpawnComponent()
 		}
 	}
 
+	MaxWave = DataArray.Num();
+	CurrentWave = 1;
 	
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_BOX(TEXT("/Script/Engine.DataTable'/Game/DefenceGame/Data/DT_BoxData.DT_BoxData'"));
 	if (DT_BOX.Object)
@@ -78,6 +80,7 @@ void USpawnComponent::SetDelegateToController()
 	if (playerController)
 	{
 		OnWaveChanged.AddUObject(playerController, &ADefenceGamePlayerController::OnWaveChanged);
+		OnWaveCleared.AddUObject(playerController, &ADefenceGamePlayerController::OnWaveCleared);
 		playerController->SetSpawnComponent(this);
 	}
 }
@@ -198,8 +201,14 @@ void USpawnComponent::SantaSpawn()
 
 void USpawnComponent::NextWave()
 {
+
+	if (MaxWave == CurrentWave)
+	{
+		OnWaveCleared.Broadcast();
+		return;
+	}
+
 	CurrentWave++;
-	
 	SetSpawnWave(CurrentWave);
 	
 }
