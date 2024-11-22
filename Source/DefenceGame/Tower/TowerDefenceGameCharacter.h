@@ -121,6 +121,10 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DebugBox")
     uint8 ShowDebug : 1;
 
+protected:
+    TObjectPtr<class USoundBase> ThrowSound;
+
+
    
 
 };

@@ -29,6 +29,12 @@ ATowerDefenceGameCharacter::ATowerDefenceGameCharacter()
     DetectionBox->SetGenerateOverlapEvents(true);
    // DetectionSphere->SetGenerateOverlapEvents(true);
     AutoPossessAI = EAutoPossessAI::Disabled;
+
+    static ConstructorHelpers::FObjectFinder<USoundBase>Sound_Throw(TEXT("/Script/Engine.SoundWave'/Game/DefenceGame/Sound/004_swosh.004_swosh'"));
+    if (Sound_Throw.Object)
+    {
+        ThrowSound = Sound_Throw.Object;
+    }
    
 }
 
@@ -143,6 +149,8 @@ void ATowerDefenceGameCharacter::StartAttack()
 
         UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
         AnimInstance->Montage_Play(AttackAMotion,1.3f);
+
+        UGameplayStatics::PlaySoundAtLocation(this, ThrowSound, GetActorLocation());
 
         ShotSnowBall(DetectBoxs[0]);
         //DetectBoxs[0]->OnDestroyed.AddDynamic(this, &ThisClass::TargetDestroy);

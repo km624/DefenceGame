@@ -68,7 +68,7 @@ protected:
 	FBoxData BoxData;
 
 protected:
-	
+	TObjectPtr<class USoundBase> BoxDestroySound;
 	
 
 };

@@ -9,6 +9,7 @@
 #include "DefenceGame/DefenceGamePlayerController.h"
 #include "Player/DFPlayerState.h"
 #include "Components/StaticMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 AAIDefenceGameCharacter::AAIDefenceGameCharacter()
 {
@@ -44,6 +45,11 @@ AAIDefenceGameCharacter::AAIDefenceGameCharacter()
 	StaticComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static_comp"));
 	StaticComp->SetupAttachment(GetRootComponent());
 
+	static ConstructorHelpers::FObjectFinder<USoundBase>Sound_BoxDestroy(TEXT("/Script/Engine.SoundWave'/Game/DefenceGame/Sound/BoxDestorySound.BoxDestorySound'"));
+	if (Sound_BoxDestroy.Object)
+	{
+		BoxDestroySound = Sound_BoxDestroy.Object;
+	}
 }
 
 void AAIDefenceGameCharacter::BeginPlay()
@@ -74,6 +80,8 @@ void AAIDefenceGameCharacter::OnDead()
 	ADFPlayerState* playerState = Cast<ADFPlayerState>(playerController->PlayerState);
 
 	playerState->SetMoney(BoxMoney);
+	UGameplayStatics::PlaySoundAtLocation(this, BoxDestroySound, GetActorLocation());
+
 	OnHpZero.Broadcast();
 	Destroy();
 }

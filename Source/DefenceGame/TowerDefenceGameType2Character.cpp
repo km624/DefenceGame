@@ -12,6 +12,7 @@ void ATowerDefenceGameType2Character::StartAttack()
         UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
         AnimInstance->Montage_Play(AttackAMotion, 1.3f);
 
+        UGameplayStatics::PlaySoundAtLocation(this, ThrowSound, GetActorLocation());
         int32 CurrentDetectBoxs = FMath::Clamp(DetectBoxs.Num(), 1, 3);
         for (int32 i = 0; i < CurrentDetectBoxs; i++)
         {

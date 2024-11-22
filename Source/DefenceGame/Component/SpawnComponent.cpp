@@ -7,6 +7,7 @@
 #include "Engine/World.h"
 #include "DefenceGame/DefenceGamePlayerController.h"
 #include "Player/DFPlayerState.h"
+#include "Kismet/GameplayStatics.h"
 
 
 USpawnComponent::USpawnComponent()
@@ -49,6 +50,12 @@ USpawnComponent::USpawnComponent()
 		BoxDataMap.Add(rowName, *rowInfo);
 	}
 	
+	static ConstructorHelpers::FObjectFinder<USoundBase>Sound_Santa(TEXT("/Script/Engine.SoundWave'/Game/DefenceGame/Sound/SantaHoOne.SantaHoOne'"));
+	if (Sound_Santa.Object)
+	{
+		SantaSound = Sound_Santa.Object;
+	}
+
 
 	CurrentWave = 1;
 
@@ -194,6 +201,7 @@ void USpawnComponent::SantaSpawn()
 			aiCharacter->FinishSpawning(SpawnTransform);
 		}
 
+		UGameplayStatics::PlaySound2D(GetWorld(), SantaSound);
 		ADFAIController* aiController = GetWorld()->SpawnActor<ADFAIController>(ADFAIController::StaticClass(), StartPosition->GetActorLocation(), FRotator::ZeroRotator);
 		aiController->Possess(aiCharacter);
 	}

@@ -118,5 +118,9 @@ public:
 
 protected:
 	uint8 bIsGameover : 1;
+
+protected:
+	TObjectPtr<class USoundBase> SantaSound;
+	
 		
 };
