@@ -10,6 +10,9 @@
 #include "Player/DFPlayerState.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraComponent.h"
+#include "NiagaraSystem.h"
+#include "NiagaraFunctionLibrary.h"
 
 AAIDefenceGameCharacter::AAIDefenceGameCharacter()
 {
@@ -50,6 +53,14 @@ AAIDefenceGameCharacter::AAIDefenceGameCharacter()
 	{
 		BoxDestroySound = Sound_BoxDestroy.Object;
 	}
+
+	FXComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Niagara_COMP"));
+	FXComponent->SetupAttachment(GetRootComponent());
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> FX_NA(TEXT("/Script/Niagara.NiagaraSystem'/Game/DefenceGame/Effect/BoxDestroyEffect_System.BoxDestroyEffect_System'"));
+	if (FX_NA.Succeeded())
+	{
+		FXSystem = FX_NA.Object;
+	}
 }
 
 void AAIDefenceGameCharacter::BeginPlay()
@@ -81,6 +92,11 @@ void AAIDefenceGameCharacter::OnDead()
 
 	playerState->SetMoney(BoxMoney);
 	UGameplayStatics::PlaySoundAtLocation(this, BoxDestroySound, GetActorLocation());
+
+	FXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), FXSystem, GetActorLocation());
+	FXComponent->Activate(true);
+
+	//FXComponent->Deactivate();
 
 	OnHpZero.Broadcast();
 	Destroy();

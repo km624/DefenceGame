@@ -69,6 +69,14 @@ protected:
 
 protected:
 	TObjectPtr<class USoundBase> BoxDestroySound;
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
+	TObjectPtr<class UNiagaraSystem> FXSystem;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
+	TObjectPtr<class UNiagaraComponent> FXComponent;
 	
 
 };
