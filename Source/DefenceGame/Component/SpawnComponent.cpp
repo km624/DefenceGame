@@ -98,7 +98,8 @@ void USpawnComponent::SpawnWaveDelay(int32 Wave)
 	GetWorld()->GetTimerManager().SetTimer(WaveTimerHandle, [this]()
 		{
 			SantaSpawn();
-			SetTimer();
+			if(CurrentWave!=MaxWave)
+				SetTimer();
 		}, 3.0f, false);
 }
 
@@ -189,7 +190,7 @@ void USpawnComponent::SantaSpawn()
 	if (SpawnSanta && StartPosition)
 	{
 		const FTransform SpawnTransform(StartPosition->GetActorLocation());
-		FBoxData boxdData = BoxDataMap["Normal"];
+		FBoxData boxdData = BoxDataMap["Santa"];
 		AAIDefenceGameCharacter* aiCharacter = GetWorld()->SpawnActorDeferred<AAIDefenceGameCharacter>(SpawnSanta, SpawnTransform);
 		if (aiCharacter)
 		{
@@ -197,7 +198,8 @@ void USpawnComponent::SantaSpawn()
 			aiCharacter->OnDestroyed.AddDynamic(this, &USpawnComponent::BoxOnDead);
 
 			CurrentSpawnBox.Add(aiCharacter);
-
+			if(CurrentWave==MaxWave)
+				aiCharacter->ChangeSantaColli();
 			aiCharacter->FinishSpawning(SpawnTransform);
 		}
 

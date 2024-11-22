@@ -13,6 +13,7 @@
 #include "NiagaraComponent.h"
 #include "NiagaraSystem.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Components/CapsuleComponent.h"
 
 AAIDefenceGameCharacter::AAIDefenceGameCharacter()
 {
@@ -137,6 +138,11 @@ void AAIDefenceGameCharacter::SetUpBox(FBoxData newBoxData)
 
 	StaticComp->SetStaticMesh(staticMesh);
 	
+}
+
+void AAIDefenceGameCharacter::ChangeSantaColli()
+{
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Box"));
 }
 
 

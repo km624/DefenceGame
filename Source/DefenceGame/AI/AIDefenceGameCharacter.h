@@ -77,6 +77,9 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
 	TObjectPtr<class UNiagaraComponent> FXComponent;
+
+public:
+	void ChangeSantaColli();
 	
 
 };
