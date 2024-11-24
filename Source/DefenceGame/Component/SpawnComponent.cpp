@@ -8,7 +8,7 @@
 #include "DefenceGame/DefenceGamePlayerController.h"
 #include "Player/DFPlayerState.h"
 #include "Kismet/GameplayStatics.h"
-
+#include "Level/DFLevelScriptActor.h"
 
 USpawnComponent::USpawnComponent()
 {
@@ -202,10 +202,20 @@ void USpawnComponent::SantaSpawn()
 				aiCharacter->ChangeSantaColli();
 			aiCharacter->FinishSpawning(SpawnTransform);
 		}
-
+	
 		UGameplayStatics::PlaySound2D(GetWorld(), SantaSound);
 		ADFAIController* aiController = GetWorld()->SpawnActor<ADFAIController>(ADFAIController::StaticClass(), StartPosition->GetActorLocation(), FRotator::ZeroRotator);
 		aiController->Possess(aiCharacter);
+		if (CurrentWave == MaxWave)
+		{
+			ADFLevelScriptActor* ownerActor = Cast<ADFLevelScriptActor>(GetOwner());
+			if (IsValid(ownerActor))
+			{
+				ownerActor->SpawnSanta = aiCharacter;
+				ownerActor->SantaCutSceneTrigger();
+			}
+		}
+	
 	}
 }
 
@@ -254,4 +264,6 @@ void USpawnComponent::AllTimeHandleStop()
 	WaveTimerHandle.Invalidate();
 	UE_LOG(LogTemp, Warning, TEXT("Handle Stop"));
 }
+
+
 

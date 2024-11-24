@@ -20,7 +20,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
 	TObjectPtr<class USpawnComponent> SpawnComponent;
 
+public:
+	UFUNCTION(BlueprintImplementableEvent, Category = "Trigger", Meta = (DisplayName = "SantaCutSceneTriggerCpp"))
+	void K2_SantaCutSceneTrigger();
 
+	void SantaCutSceneTrigger();
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category=Spawn)
+	TObjectPtr<class ACharacter> SpawnSanta;
 
 	
 };

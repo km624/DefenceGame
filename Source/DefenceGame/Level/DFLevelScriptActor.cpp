@@ -9,3 +9,9 @@ ADFLevelScriptActor::ADFLevelScriptActor()
 {
 	SpawnComponent = CreateDefaultSubobject<USpawnComponent>(TEXT("Spawn"));
 }
+
+void ADFLevelScriptActor::SantaCutSceneTrigger()
+{
+	K2_SantaCutSceneTrigger();
+	
+}

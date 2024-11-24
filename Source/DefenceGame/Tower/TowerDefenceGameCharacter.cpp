@@ -151,20 +151,20 @@ void ATowerDefenceGameCharacter::StartAttack()
         AnimInstance->Montage_Play(AttackAMotion,1.3f);
 
         UGameplayStatics::PlaySoundAtLocation(this, ThrowSound, GetActorLocation());
+        if (IsValid(DetectBoxs[0]))
+        {
+            ShotSnowBall(DetectBoxs[0]);
+            //DetectBoxs[0]->OnDestroyed.AddDynamic(this, &ThisClass::TargetDestroy);
+            //UE_LOG(LogTemp, Warning, TEXT("Attack -> %s"), *DetectBoxs[0]->GetName());
+            UGameplayStatics::ApplyDamage(
+                DetectBoxs[0],
+                AttackDamage,
+                PlayerController,
+                this,
+                UDamageType::StaticClass());
 
-        ShotSnowBall(DetectBoxs[0]);
-        //DetectBoxs[0]->OnDestroyed.AddDynamic(this, &ThisClass::TargetDestroy);
-        //UE_LOG(LogTemp, Warning, TEXT("Attack -> %s"), *DetectBoxs[0]->GetName());
-        UGameplayStatics::ApplyDamage(
-            DetectBoxs[0],
-            AttackDamage,
-            PlayerController,
-            this,
-            UDamageType::StaticClass()
-
-        );
-
-       
+        }
+   
     }
         
 }

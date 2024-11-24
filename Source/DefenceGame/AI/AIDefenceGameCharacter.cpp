@@ -135,8 +135,8 @@ void AAIDefenceGameCharacter::SetUpBox(FBoxData newBoxData)
 	BoxMoney = BoxData.Money;
 
 	staticMesh = BoxData.boxMesh;
-
-	StaticComp->SetStaticMesh(staticMesh);
+	if(!staticMesh.IsNull())
+		StaticComp->SetStaticMesh(staticMesh);
 	
 }
 

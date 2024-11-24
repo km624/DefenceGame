@@ -92,7 +92,7 @@ protected:
 	TSubclassOf<class ATowerDefenceGameCharacter>PreviewActorClass;
 	
 	// 현재 프리뷰 액터 인스턴스
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Preview")
 	TObjectPtr<class ATowerDefenceGameCharacter> PreviewActor;
 
 

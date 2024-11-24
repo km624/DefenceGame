@@ -121,9 +121,12 @@ void ADefenceGamePlayerController::SetUpCamera()
 
 void ADefenceGamePlayerController::SetUpPreview(TSubclassOf<class ATowerDefenceGameCharacter> TowerDefenceCharacterClass)
 {
+
 	PreviewActorClass = TowerDefenceCharacterClass;
 	if (PreviewActorClass)
 	{
+		if (PreviewActor)
+			PreviewActor->Destroy();
 		//PreviewActor = GetWorld()->SpawnActor<ATowerDefenceGameCharacter>(PreviewActorClass, FVector::ZeroVector, FRotator::ZeroRotator);
 		ADFPlayerState* playerState = Cast<ADFPlayerState>(PlayerState);
 		PreviewActor = GetWorld()->SpawnActorDeferred<ATowerDefenceGameCharacter>(PreviewActorClass, FTransform());

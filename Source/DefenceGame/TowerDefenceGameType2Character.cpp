@@ -16,6 +16,8 @@ void ATowerDefenceGameType2Character::StartAttack()
         int32 CurrentDetectBoxs = FMath::Clamp(DetectBoxs.Num(), 1, 3);
         for (int32 i = 0; i < CurrentDetectBoxs; i++)
         {
+            if (IsValid(DetectBoxs[i]))
+            {
                 ShotSnowBall(DetectBoxs[i]);
                 //DetectBoxs[i]->OnDestroyed.AddDynamic(this, &ThisClass::TargetDestroy);
                 UGameplayStatics::ApplyDamage(
@@ -31,7 +33,8 @@ void ATowerDefenceGameType2Character::StartAttack()
                     CurrentDetectBoxs--;
                     bIsTargetDestroy = false;
                 }
-           
+
+            }
         }
     }
 }
