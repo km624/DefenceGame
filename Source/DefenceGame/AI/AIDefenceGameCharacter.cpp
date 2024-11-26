@@ -129,14 +129,18 @@ void AAIDefenceGameCharacter::SetupCharacterWidget(UUserWidget* InUserWidget)
 
 void AAIDefenceGameCharacter::SetUpBox(FBoxData newBoxData)
 {
+	
 	BoxData = newBoxData;
-
+	
 	MaxHp = BoxData.MaxHp;
 	BoxMoney = BoxData.Money;
+	
+	if (BoxData.boxMesh)
+	{
+		staticMesh = BoxData.boxMesh;
 
-	staticMesh = BoxData.boxMesh;
-	if(!staticMesh.IsNull())
 		StaticComp->SetStaticMesh(staticMesh);
+	}
 	
 }
 

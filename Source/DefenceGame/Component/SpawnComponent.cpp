@@ -21,33 +21,13 @@ USpawnComponent::USpawnComponent()
 	{
 		SpawnDataTable = DT_WAVE.Object;
 	}
-	if (IsValid(SpawnDataTable))
-	{
-		SpawnDataTable->GetAllRows<FWaveSpawnData>(contextString, RowArray);
-		for (FWaveSpawnData* Row : RowArray)
-		{
-			if (Row)
-			{
-				
-				DataArray.Add(*Row);
-			}
-		}
-	}
+	
 
-	MaxWave = DataArray.Num();
-	CurrentWave = 1;
 	
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_BOX(TEXT("/Script/Engine.DataTable'/Game/DefenceGame/Data/DT_BoxData.DT_BoxData'"));
 	if (DT_BOX.Object)
 	{
 		BoxSpawnDataTable = DT_BOX.Object;
-	}
-	TArray<FName> rowNames = BoxSpawnDataTable->GetRowNames();
-	FString contextString2;
-	for (FName rowName : rowNames)
-	{
-		const FBoxData* rowInfo = BoxSpawnDataTable->FindRow<FBoxData>(rowName, contextString2);
-		BoxDataMap.Add(rowName, *rowInfo);
 	}
 	
 	static ConstructorHelpers::FObjectFinder<USoundBase>Sound_Santa(TEXT("/Script/Engine.SoundWave'/Game/DefenceGame/Sound/SantaHoOne.SantaHoOne'"));
@@ -57,7 +37,7 @@ USpawnComponent::USpawnComponent()
 	}
 
 
-	CurrentWave = 1;
+	
 
 }
 
@@ -68,9 +48,42 @@ void USpawnComponent::BeginPlay()
 	Super::BeginPlay();
 
 	SetDelegateToController();
+	CurrentWave = 1;
+	FString contextString;
+	TArray<FWaveSpawnData*> RowArray;
+	if (IsValid(SpawnDataTable))
+	{
+		SpawnDataTable->GetAllRows<FWaveSpawnData>(contextString, RowArray);
+		for (FWaveSpawnData* Row : RowArray)
+		{
+			if (Row)
+			{
+
+				DataArray.Add(*Row);
+			}
+		}
+	}
+	MaxWave = DataArray.Num();
+	TArray<FName> rowNames = BoxSpawnDataTable->GetRowNames();
+	FString contextString2;
+	for (FName rowName : rowNames)
+	{
+		const FBoxData* rowInfo = BoxSpawnDataTable->FindRow<FBoxData>(rowName, contextString2);
+		BoxDataMap.Add(rowName, *rowInfo);
+	}
+	TArray<AActor*> Actors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "Position", Actors);
+
+	FString BaseString = TEXT("AITargetPostion");
+	for (int j =0; j < Actors.Num(); j++)
+	{
+
+		if (Actors[j]->GetActorNameOrLabel() == TEXT("AIStartPostion"))
+			StartPosition = Actors[j];
+
+	}
 
 	SetSpawnWave(CurrentWave);
-	
 }
 
 void USpawnComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -190,7 +203,9 @@ void USpawnComponent::SantaSpawn()
 	if (SpawnSanta && StartPosition)
 	{
 		const FTransform SpawnTransform(StartPosition->GetActorLocation());
+		
 		FBoxData boxdData = BoxDataMap["Santa"];
+		
 		AAIDefenceGameCharacter* aiCharacter = GetWorld()->SpawnActorDeferred<AAIDefenceGameCharacter>(SpawnSanta, SpawnTransform);
 		if (aiCharacter)
 		{
@@ -217,6 +232,12 @@ void USpawnComponent::SantaSpawn()
 		}
 	
 	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("start,snat faild"));
+	}
+
+	
 }
 
 void USpawnComponent::NextWave()

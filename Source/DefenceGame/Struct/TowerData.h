@@ -13,6 +13,9 @@ struct FTowerData : public FTableRowBase
 	GENERATED_BODY()
 
 public:
+
+	FTowerData();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category =Tower)
 	int32 Level;
 

@@ -245,7 +245,7 @@ bool ATowerDefenceGameCharacter::TowerLevelUp(int32 Newlevel)
         if (NextLevelTowerMoney > playerState->GetMoney())
         {
             UE_LOG(LogTemp, Warning, TEXT("NoMoney"));
-            dfPlayerController->SelectTower = NULL;
+            dfPlayerController->SelectTowerObject = NULL;
             K2_OptionWidget();
 
             return false;
@@ -256,7 +256,7 @@ bool ATowerDefenceGameCharacter::TowerLevelUp(int32 Newlevel)
             InitializeTower(PlayerController, newTowerData);
             playerState->SetMoney(-TowerMoney);
             SetUpTower();
-            dfPlayerController->SelectTower = NULL;
+            dfPlayerController->SelectTowerObject = NULL;
             K2_OptionWidget();
             return true;
         }
@@ -264,7 +264,7 @@ bool ATowerDefenceGameCharacter::TowerLevelUp(int32 Newlevel)
     }
     else
     {
-        dfPlayerController->SelectTower = NULL;
+        dfPlayerController->SelectTowerObject = NULL;
         K2_OptionWidget();
         return false;
     }

@@ -33,14 +33,27 @@ ADefenceGamePlayerController::ADefenceGamePlayerController()
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;
 
-	//타워 데이타
-	FString contextString;
-	TArray<FTowerData*> RowArray;
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_Tower(TEXT("/Script/Engine.DataTable'/Game/DefenceGame/Data/DT_TowerData.DT_TowerData'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_Tower(TEXT("/Script/Engine.DataTable'/Game/DefenceGame/Data/Tower.Tower'"));
 	if (DT_Tower.Object)
 	{
 		TowerDataTable = DT_Tower.Object;
 	}
+	
+
+	//HUD
+	static ConstructorHelpers::FClassFinder<UUserWidget>WIDGET_HUD(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/DefenceGame/Blueprint/UI/BP_Hud.BP_Hud_C'"));
+	if (WIDGET_HUD.Class) 
+		HUDWidgetClass = WIDGET_HUD.Class;
+}
+
+void ADefenceGamePlayerController::BeginPlay()
+{
+	// Call the base class  
+	Super::BeginPlay();
+
+	FString contextString;
+	TArray<FTowerData*> RowArray;
+	
 	if (IsValid(TowerDataTable))
 	{
 		TowerDataTable->GetAllRows<FTowerData>(contextString, RowArray);
@@ -53,17 +66,6 @@ ADefenceGamePlayerController::ADefenceGamePlayerController()
 			}
 		}
 	}
-
-	//HUD
-	static ConstructorHelpers::FClassFinder<UUserWidget>WIDGET_HUD(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/DefenceGame/Blueprint/UI/BP_Hud.BP_Hud_C'"));
-	if (WIDGET_HUD.Class) 
-		HUDWidgetClass = WIDGET_HUD.Class;
-}
-
-void ADefenceGamePlayerController::BeginPlay()
-{
-	// Call the base class  
-	Super::BeginPlay();
 
 	FInputModeGameAndUI GameAndUI;
 	SetInputMode(GameAndUI);
@@ -285,31 +287,31 @@ void ADefenceGamePlayerController::ShowTowerOption()
 	if (Hit.GetActor()->ActorHasTag(TEXT("Tower")))
 	{
 		ATowerDefenceGameCharacter* select = Cast<ATowerDefenceGameCharacter>(Hit.GetActor());
-		if (SelectTower)
+		if (SelectTowerObject)
 		{
-			SelectTower->OptionWidget();
-			if (SelectTower == select)
+			SelectTowerObject->OptionWidget();
+			if (SelectTowerObject == select)
 			{
-				SelectTower = NULL;
+				SelectTowerObject = NULL;
 			}
 			else
 			{
-				SelectTower = select;
-				SelectTower->OptionWidget();
+				SelectTowerObject = select;
+				SelectTowerObject->OptionWidget();
 			}
 		}
 		else
 		{
-			SelectTower = select;
-			SelectTower->OptionWidget();
+			SelectTowerObject = select;
+			SelectTowerObject->OptionWidget();
 		}
 	}
 	else
 	{
-		if (SelectTower)
+		if (SelectTowerObject)
 		{
-			SelectTower->OptionWidget();
-			SelectTower = NULL;
+			SelectTowerObject->OptionWidget();
+			SelectTowerObject = NULL;
 		}
 		
 	}

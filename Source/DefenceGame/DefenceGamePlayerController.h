@@ -84,7 +84,7 @@ protected:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Tower)
-	TObjectPtr<class ATowerDefenceGameCharacter> SelectTower;
+	TObjectPtr<class ATowerDefenceGameCharacter> SelectTowerObject;
 
 protected:
 	
